@@ -1,0 +1,17 @@
+<nav class="Navigacija">
+  <div class="NavLeft">
+    <a (click)="goHome()" style="cursor:pointer">
+      <img alt="Logo" class="nav-logo" />
+    </a>
+
+    <!-- prikaz poruke samo ako je korisnik ulogovan -->
+    <h1 *ngIf="isLoggedIn">
+      Dobro došao, {{ userName }}!
+    </h1>
+  </div>
+
+  <div class="NavRight">
+    <!-- dugme logout prikazano samo ako je korisnik ulogovan -->
+    <button *ngIf="isLoggedIn" class="NeonSignOut" (click)="onLogout()">Logout</button>
+  </div>
+</nav>

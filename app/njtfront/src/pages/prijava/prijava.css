@@ -1,0 +1,100 @@
+.PrijavaContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 50px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+/* 🔹 Naslov i podnaslov sa crnom pozadinom i neon efektom */
+.ProjectTitle, .TeamsTitle {
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.85); /* crna pozadina */
+  padding: 15px 30px;
+  border-radius: 12px;
+  color: #3591dd;
+  text-shadow: 0 0 5px #3591dd, 0 0 10px #3591dd, 0 0 20px #3591dd, 0 0 40px #1e90ff, 0 0 80px #1e90ff;
+  animation: flicker 3s infinite;
+  box-shadow: 0 0 10px #3591dd, 0 0 20px #1e90ff;
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 5px #3591dd, 0 0 10px #3591dd, 0 0 20px #3591dd, 0 0 40px #1e90ff, 0 0 80px #1e90ff;
+  }
+  20%, 24%, 55% {
+    opacity: 0.7;
+    text-shadow: none;
+  }
+}
+
+/* Wrapper za timove */
+.TeamsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 60%;
+  align-items: center;
+}
+
+/* Svaka celija tima */
+.TeamCell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  background-color: #000;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #3591dd, 0 0 20px #3591dd, 0 0 30px #1e90ff, 0 0 40px #1e90ff;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.TeamCell:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 15px #3591dd, 0 0 30px #1e90ff;
+}
+
+/* Naziv tima levo */
+.TeamName {
+  color: #3591dd;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+/* Dugme desno */
+.NeonButton {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background-color: #3591dd;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.NeonButton:hover {
+  background-color: #1f6fbf;
+}
+
+/* 🔹 Responsive izgled */
+@media (max-width: 768px) {
+  .TeamsWrapper {
+    width: 90%;
+  }
+
+  .TeamCell {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .NeonButton {
+    width: 80%;
+  }
+}

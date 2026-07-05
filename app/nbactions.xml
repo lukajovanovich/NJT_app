@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions xmlns="http://www.netbeans.org/ns/maven-actions/1">
+    <action>
+        <actionName>run</actionName>
+        <displayName>Run Spring Boot</displayName>
+        <packagings>
+            <packaging>jar</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>spring-boot:run</goal>
+        </goals>
+    </action>
+</actions>

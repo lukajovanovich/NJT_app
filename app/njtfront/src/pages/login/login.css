@@ -1,0 +1,133 @@
+body {
+  background-color: #0a0a0a;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+.LoginContainer {
+  width: 320px;
+  margin: 100px auto;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  background-color: #000;
+  box-shadow: 0 0 20px #007bff, inset 0 0 10px #007bff;
+  border: 1px solid #007bff;
+  transition: all 0.3s ease-in-out;
+}
+
+.LoginContainer:hover {
+  box-shadow: 0 0 30px #007bff, inset 0 0 15px #007bff;
+}
+
+.neon-text {
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  color: #007bff; /* sada plavo */
+  text-shadow: 0 0 8px #007bff, 0 0 20px #007bff, 0 0 40px #007bff;
+  animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    text-shadow: 0 0 6px #007bff, 0 0 15px #007bff;
+  }
+  to {
+    text-shadow: 0 0 20px #007bff, 0 0 40px #007bff;
+  }
+}
+
+label {
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  color: #fff;
+  margin-left: 4px;
+}
+
+input {
+  display: block;
+  width: calc(100% - 4px); /* isto kao dugme, poravnato */
+  padding: 10px;
+  margin: 8px auto 18px auto;
+  border-radius: 6px;
+  border: 1px solid #007bff;
+  background-color: #fff; /* bele celije */
+  color: #000;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus {
+  box-shadow: 0 0 10px #007bff;
+  border-color: #007bff;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 0 12px #007bff;
+  transition: 0.3s;
+  margin-top: 8px;
+}
+
+button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 0 20px #007bff;
+}
+
+p {
+  color: white;
+  margin-top: 10px;
+}
+
+.RegisterContainer {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #000;
+  box-shadow: 0 0 20px #007bff, inset 0 0 10px #007bff;
+  border: 1px solid #007bff;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+
+.RegisterContainer h2 {
+  color: #007bff;
+  margin-bottom: 20px;
+  text-shadow: 0 0 8px #007bff, 0 0 20px #007bff;
+}
+
+.RegisterContainer input {
+  display: block;
+  width: calc(100% - 4px);
+  padding: 10px;
+  margin: 8px auto 18px auto;
+  border-radius: 6px;
+  border: 1px solid #007bff;
+  background-color: #fff;
+  color: #000;
+}
+
+.RegisterContainer button {
+  margin-top: 8px;
+}
+
+.error {
+  color: #ff5555;
+  font-size: 13px;
+  margin-top: 4px;
+}
+input.ng-invalid.ng-touched {
+  border-color: #ff5555;
+  outline: none;
+}
+

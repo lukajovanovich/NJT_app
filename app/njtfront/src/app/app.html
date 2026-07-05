@@ -1,0 +1,17 @@
+<div class="app-container">
+  <ng-container *ngIf="isAdmin === null">
+    <div class="choice-container">
+      <h2>Da li ste UO?</h2>
+      <button (click)="setAdminChoice(true)">Da</button>
+      <button (click)="setAdminChoice(false)">Ne</button>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="isAdmin === true">
+    <app-dodaj-projekat></app-dodaj-projekat>
+  </ng-container>
+
+  <ng-container *ngIf="isAdmin === false">
+    <app-pocetna></app-pocetna>
+  </ng-container>
+</div>

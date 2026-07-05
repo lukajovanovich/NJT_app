@@ -1,0 +1,16 @@
+<div class="PrijavaContainer">
+  <h1 class="NeonFlicker ProjectTitle">{{ projectName || 'Nepoznat projekat' }}</h1>
+  <h2 class="NeonFlicker TeamsTitle">Timovi</h2>
+
+  <p *ngIf="loadingTeams" class="TeamsTitle">Učitavanje timova...</p>
+  <p *ngIf="!loadingTeams && teams.length === 0" class="TeamsTitle">
+    Nema dostupnih timova za ovaj projekat.
+  </p>
+
+  <div class="TeamsWrapper">
+    <div *ngFor="let team of teams" class="TeamCell">
+      <span class="TeamName">{{ team.naziv }}</span>
+      <button class="NeonButton" (click)="handleSignUp(team)">Prijavi se</button>
+    </div>
+  </div>
+</div>

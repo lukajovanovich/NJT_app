@@ -1,0 +1,87 @@
+<div class="PocetnaContainer">
+  <div class="TabelaWrapperHorizontal">
+    <div class="MojiProjektiBox">
+      <h1 class="ProjektiNaslov NeonFlicker">MOJI PROJEKTI</h1>
+
+      <div class="TabelaContainer">
+        <table class="MojiProjektiTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Naziv</th>
+              <th>Tim</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let user of users"
+              [class.clickable]="isAccepted(user.status)"
+              (click)="handleRowClick(user)"
+            >
+              <td>{{ user.id }}</td>
+              <td>{{ user.naziv }}</td>
+              <td>{{ user.tim }}</td>
+              <td>{{ user.status }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div *ngIf="selectedProject" class="TeamMembersBox fade-in">
+      <div class="TeamInfoContainer">
+        <h2 class="TeamTitle NeonFlicker">{{ selectedProject.tim }}</h2>
+        <p class="KoordinatorText">
+          Koordinator: {{ selectedProject.clanoviTima[0]?.ime }} {{ selectedProject.clanoviTima[0]?.prezime }}
+        </p>
+
+        <div class="TabelaContainer">
+          <table class="TeamTable">
+            <thead>
+              <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Email</th>
+                <th>Telefon</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let member of getSelectedTeamMembers()">
+                <td>{{ member.ime }}</td>
+                <td>{{ member.prezime }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.brojTelefona }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="AktivniProjektiSection">
+    <h1 class="AktivniProjektiNaslov NeonFlicker">AKTIVNI PROJEKTI</h1>
+
+    <div class="AktivniProjektiContainer">
+      <table class="AktivniProjektiTable">
+        <thead>
+          <tr>
+            <th>Naziv</th>
+            <th>Datum pocetka</th>
+            <th>Datum zavrsetka</th>
+            <th>Koordinator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proj of activeProjects" (click)="openPrijava(proj)" class="clickable">
+            <td>{{ proj.naziv }}</td>
+            <td>{{ proj.datumPocetka }}</td>
+            <td>{{ proj.datumZavrsetka }}</td>
+            <td>{{ proj.odabraniKoordinator.ime }} {{ proj.odabraniKoordinator.prezime }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

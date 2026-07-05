@@ -1,0 +1,46 @@
+.Navigacija {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e1e;
+  padding: 10px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Leva strana: logo + tekst */
+.NavLeft {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.NavLeft h1 {
+  color: white;
+  font-size: 20px;
+  margin: 0;
+}
+
+/* Logo */
+.nav-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Desna strana: dugme logout */
+.NavRight .NeonSignOut {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: #3591dd;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  text-shadow: 0 0 5px #3591dd, 0 0 10px #3591dd, 0 0 20px #3591dd;
+  transition: all 0.2s ease-in-out;
+}
+
+.NavRight .NeonSignOut:hover {
+  box-shadow: 0 0 12px #3591dd, 0 0 24px #1e90ff, 0 0 36px #1e90ff;
+}

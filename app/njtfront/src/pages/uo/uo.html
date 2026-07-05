@@ -1,0 +1,51 @@
+<div class="UOContainer">
+  <h1 class="PrijaveNaslov NeonFlicker">PRIJAVE CLANOVA</h1>
+  <div class="UOPrijaveTableContainer">
+    <table class="PrijaveTable">
+      <thead>
+        <tr>
+          <th>Ime</th>
+          <th>Prezime</th>
+          <th>Projekat</th>
+          <th>Tim</th>
+          <th>Status</th>
+          <th>Prihvati</th>
+          <th>Odbij</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of prijave">
+          <td>{{ p.Ime }}</td>
+          <td>{{ p.Prezime }}</td>
+          <td>{{ p.Projekat }}</td>
+          <td>{{ p.Tim }}</td>
+          <td>{{ p.status }}</td>
+          <td><button class="PrihvatiBtn" (click)="prihvati(p)" [disabled]="isAccepted(p.status)">Prihvati</button></td>
+          <td><button class="OdbijBtn" (click)="odbij(p)" [disabled]="isRejected(p.status)">Odbij</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h1 class="AktivniProjektiNaslov NeonFlicker">AKTIVNI PROJEKTI</h1>
+  <div class="UOProjectsTableContainer">
+    <table class="AktivniProjektiTable">
+      <thead>
+        <tr>
+          <th>Naziv</th>
+          <th>Datum Pocetka</th>
+          <th>Datum Zavrsetka</th>
+          <th>Koordinator</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let proj of activeProjects">
+          <td>{{ proj.Naziv }}</td>
+          <td>{{ proj.DatumPocetka }}</td>
+          <td>{{ proj.DatumZavrsetka }}</td>
+          <td>{{ proj.Koordinator }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

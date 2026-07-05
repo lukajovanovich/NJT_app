@@ -1,0 +1,133 @@
+<div class="LoginContainer">
+  <h1 class="neon-text">Login</h1>
+
+  <!-- Login forma -->
+  <form (ngSubmit)="login()" #loginForm="ngForm">
+
+    <!-- Polje za email -->
+    <div>
+      <label for="email">Email:</label>
+      <input 
+        type="email"
+        id="email"
+        [(ngModel)]="email" 
+        name="email"
+        required
+        email
+        #emailField="ngModel"
+      />
+      <!-- Validacija email polja -->
+      <div class="error" *ngIf="emailField.invalid && emailField.touched">
+        <p *ngIf="emailField.errors?.['required']">Email je obavezan.</p>
+        <p *ngIf="emailField.errors?.['email']">Email mora sadržati znak @ i biti validan format.</p>
+      </div>
+    </div>
+
+    <!-- Polje za šifru -->
+    <div>
+      <label for="sifra">Šifra:</label>
+      <input 
+        type="password"
+        id="sifra"
+        [(ngModel)]="sifra"
+        name="sifra"
+        required
+        minlength="8"
+        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!#%]).{8,}$"
+        #sifraField="ngModel"
+      />
+      <!-- Validacija šifre -->
+      <div class="error" *ngIf="sifraField.invalid && sifraField.touched">
+        <p *ngIf="sifraField.errors?.['required']">Šifra je obavezna.</p>
+        <p *ngIf="sifraField.errors?.['minlength']">Šifra mora imati najmanje 8 karaktera.</p>
+        <p *ngIf="sifraField.errors?.['pattern']">
+          Šifra mora sadržati bar jedno veliko i malo slovo, jedan broj i znak (!, #, %).
+        </p>
+      </div>
+    </div>
+
+    <!-- Dugme za login -->
+    <button type="submit" [disabled]="loading">Prijavi se</button>
+  </form>
+
+  <!-- Dugme za prikaz/sakrivanje forme registracije -->
+  <button (click)="showRegisterForm = !showRegisterForm">
+    {{ showRegisterForm ? 'Zatvori registraciju' : 'Registruj se' }}
+  </button>
+
+  <!-- Forma za registraciju -->
+  <div *ngIf="showRegisterForm" class="RegisterContainer">
+    <h2>Registracija novog člana</h2>
+    <form (ngSubmit)="register()" #registerForm="ngForm">
+
+      <!-- Ime -->
+      <div>
+        <label for="ime">Ime:</label>
+        <input type="text" id="ime" [(ngModel)]="newUser.ime" name="ime" required #imeField="ngModel" />
+        <p class="error" *ngIf="imeField.invalid && imeField.touched">Ime je obavezno.</p>
+      </div>
+
+      <!-- Prezime -->
+      <div>
+        <label for="prezime">Prezime:</label>
+        <input type="text" id="prezime" [(ngModel)]="newUser.prezime" name="prezime" required #prezimeField="ngModel" />
+        <p class="error" *ngIf="prezimeField.invalid && prezimeField.touched">Prezime je obavezno.</p>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="emailReg">Email:</label>
+        <input type="email" id="emailReg" [(ngModel)]="newUser.email" name="emailReg" required email #emailRegField="ngModel" />
+        <div class="error" *ngIf="emailRegField.invalid && emailRegField.touched">
+          <p *ngIf="emailRegField.errors?.['required']">Email je obavezan.</p>
+          <p *ngIf="emailRegField.errors?.['email']">Email mora biti u pravom formatu.</p>
+        </div>
+      </div>
+
+      <!-- Šifra -->
+      <div>
+        <label for="sifraReg">Šifra:</label>
+        <input 
+          type="password" 
+          id="sifraReg"
+          [(ngModel)]="newUser.sifra"
+          name="sifraReg"
+          required 
+          minlength="8"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!#%]).{8,}$"
+          #sifraRegField="ngModel"
+        />
+        <!-- Validacija šifre -->
+        <div class="error" *ngIf="sifraRegField.invalid && sifraRegField.touched">
+          <p *ngIf="sifraRegField.errors?.['required']">Šifra je obavezna.</p>
+          <p *ngIf="sifraRegField.errors?.['minlength']">Šifra mora imati najmanje 8 karaktera.</p>
+          <p *ngIf="sifraRegField.errors?.['pattern']">
+            Šifra mora sadržati bar jedno veliko, jedno malo slovo, jedan broj i znak (!, #, %).
+          </p>
+        </div>
+      </div>
+
+      <!-- Broj telefona -->
+      <div>
+        <label for="brojTelefona">Broj telefona:</label>
+        <input type="text" id="brojTelefona" [(ngModel)]="newUser.brojTelefona" name="brojTelefona" required #brojField="ngModel" />
+        <p class="error" *ngIf="brojField.invalid && brojField.touched">Broj telefona je obavezan.</p>
+      </div>
+
+      <!-- Checkbox za UO status -->
+      <div style="text-align: left; margin-bottom: 18px;">
+        <label for="uo" style="display: block; color: white; margin-bottom: 4px;">UO</label>
+        <input type="checkbox" id="uo" [(ngModel)]="newUser.uo" name="uo" />
+      </div>
+
+      <!-- Dugme za registraciju -->
+      <button type="submit" [disabled]="registerForm.invalid">Registruj</button>
+    </form>
+  </div>
+
+  <!-- Prikaz globalne greške -->
+  <p *ngIf="errorMessage" class="error" style="margin-top: 10px;">{{ errorMessage }}</p>
+
+  <!-- Poruka tokom učitavanja -->
+  <p *ngIf="loading" style="color: gray;">Učitavanje podataka...</p>
+</div>

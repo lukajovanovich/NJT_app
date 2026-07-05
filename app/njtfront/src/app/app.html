@@ -1,17 +1,18 @@
-<div class="app-container">
-  <ng-container *ngIf="isAdmin === null">
-    <div class="choice-container">
-      <h2>Da li ste UO?</h2>
-      <button (click)="setAdminChoice(true)">Da</button>
-      <button (click)="setAdminChoice(false)">Ne</button>
-    </div>
-  </ng-container>
+<div class="app-background" aria-hidden="true">
+  <img
+    #backgroundImage
+    class="app-background__image"
+    src="assets/pozadina.jpeg"
+    alt=""
+    [style.transform]="'translate3d(-50%, ' + backgroundShift + ', 0)'"
+    (load)="updateBackgroundShift()"
+  />
+  <div class="app-background__overlay"></div>
+</div>
 
-  <ng-container *ngIf="isAdmin === true">
-    <app-dodaj-projekat></app-dodaj-projekat>
-  </ng-container>
-
-  <ng-container *ngIf="isAdmin === false">
-    <app-pocetna></app-pocetna>
-  </ng-container>
+<div class="app-shell">
+  <app-navbar (logoutEvent)="logout()"></app-navbar>
+  <main class="app-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

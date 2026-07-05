@@ -59,6 +59,10 @@ th {
   font-weight: bold;
 }
 
+td {
+  color: #0f172a;
+}
+
 tr:nth-child(even) {
   background-color: #f9f9f9;
 }

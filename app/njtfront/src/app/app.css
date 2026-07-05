@@ -1,43 +1,45 @@
-/* Centrirani container za glavne stranice */
-.App {
-  text-align: center;
+:host {
+  display: block;
+  min-height: 100vh;
 }
 
-/* Navbar neon dugme */
-.NeonSignOut {
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  background-color: #000;
-  color: #3591dd;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  text-shadow: 0 0 5px #3591dd, 0 0 10px #3591dd, 0 0 20px #3591dd,
-    0 0 40px #1e90ff, 0 0 80px #1e90ff;
-  transition: all 0.2s ease-in-out;
+.app-shell {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
 }
 
-.NeonSignOut:hover {
-  box-shadow: 0 0 12px #3591dd, 0 0 24px #1e90ff, 0 0 36px #1e90ff,
-    0 0 48px #1e90ff;
+.app-content {
+  position: relative;
+  z-index: 1;
 }
 
-/* Neon flicker animation (za naslove i dugmad) */
-@keyframes neonFlicker {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    opacity: 1;
-    text-shadow: 0 0 5px #3591dd, 0 0 10px #3591dd, 0 0 20px #3591dd,
-      0 0 40px #1e90ff, 0 0 80px #1e90ff;
-  }
-  20%, 24%, 55% {
-    opacity: 0.7;
-    text-shadow: none;
-  }
+.app-background {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: #020617;
 }
 
-.NeonFlicker {
-  animation: neonFlicker 2.5s infinite;
-  color: #3591dd;
-  font-weight: 700;
+.app-background__image {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100vw;
+  min-height: 100vh;
+  max-width: none;
+  transform-origin: top center;
+  will-change: transform;
+  filter: brightness(0.74) saturate(1.08);
+}
+
+.app-background__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.18) 0%, rgba(2, 6, 23, 0.45) 48%, rgba(2, 6, 23, 0.68) 100%);
 }

@@ -1,10 +1,13 @@
+html,
 body {
-  background: url('/assets/code_lyoko.jpg') no-repeat center center fixed;
-  background-size: cover;
-  backdrop-filter: blur(6px);
-  min-height: 100vh;
   margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background-color: #020617;
   font-family: "Poppins", sans-serif;
+  color: #fff;
 }
 
 .nav-logo {
@@ -14,4 +17,8 @@ body {
   border-radius: 8px;
   object-fit: cover;
   display: inline-block;
+}
+
+* {
+  box-sizing: border-box;
 }

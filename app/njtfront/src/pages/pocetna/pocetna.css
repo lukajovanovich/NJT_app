@@ -39,6 +39,10 @@
   font-weight: bold;
 }
 
+.MojiProjektiTable td, .TeamTable td, .AktivniProjektiTable td {
+  color: #0f172a;
+}
+
 .MojiProjektiTable tr:nth-child(even), .TeamTable tr:nth-child(even), .AktivniProjektiTable tr:nth-child(even) { background-color: #f2f2f2; }
 
 .MojiProjektiTable tr:hover.clickable { background-color: #e6f0ff; cursor: pointer; }

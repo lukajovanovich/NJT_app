@@ -1,0 +1,15 @@
+# Kopiraj ovaj fajl u:
+# app/local/application-mail.properties
+#
+# Za Gmail koristi App Password, ne obicnu lozinku.
+
+app.mail.enabled=true
+app.mail.from=your_sender_mail@gmail.com
+app.mail.admin-recipients=admin1@gmail.com,admin2@gmail.com
+
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your_sender_mail@gmail.com
+spring.mail.password=YOUR_GMAIL_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true

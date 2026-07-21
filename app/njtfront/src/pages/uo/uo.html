@@ -1,51 +1,108 @@
 <div class="UOContainer">
-  <h1 class="PrijaveNaslov NeonFlicker">PRIJAVE CLANOVA</h1>
-  <div class="UOPrijaveTableContainer">
-    <table class="PrijaveTable">
-      <thead>
-        <tr>
-          <th>Ime</th>
-          <th>Prezime</th>
-          <th>Projekat</th>
-          <th>Tim</th>
-          <th>Status</th>
-          <th>Prihvati</th>
-          <th>Odbij</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let p of prijave">
-          <td>{{ p.Ime }}</td>
-          <td>{{ p.Prezime }}</td>
-          <td>{{ p.Projekat }}</td>
-          <td>{{ p.Tim }}</td>
-          <td>{{ p.status }}</td>
-          <td><button class="PrihvatiBtn" (click)="prihvati(p)" [disabled]="isAccepted(p.status)">Prihvati</button></td>
-          <td><button class="OdbijBtn" (click)="odbij(p)" [disabled]="isRejected(p.status)">Odbij</button></td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="PageIntro">
+    <h1 class="NeonFlicker">{{ appName }} / Admin</h1>
+    <p>Upravljanje prijavama i projektima na jednom mestu.</p>
   </div>
 
-  <h1 class="AktivniProjektiNaslov NeonFlicker">AKTIVNI PROJEKTI</h1>
-  <div class="UOProjectsTableContainer">
-    <table class="AktivniProjektiTable">
-      <thead>
-        <tr>
-          <th>Naziv</th>
-          <th>Datum Pocetka</th>
-          <th>Datum Zavrsetka</th>
-          <th>Koordinator</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let proj of activeProjects">
-          <td>{{ proj.Naziv }}</td>
-          <td>{{ proj.DatumPocetka }}</td>
-          <td>{{ proj.DatumZavrsetka }}</td>
-          <td>{{ proj.Koordinator }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="Panel">
+    <h2 class="SectionTitle">Prijave članova</h2>
+    <div class="TableWrap">
+      <table class="DataTable">
+        <thead>
+          <tr>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Projekat</th>
+            <th>Tim</th>
+            <th>Status</th>
+            <th>Prihvati</th>
+            <th>Odbij</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of prijave">
+            <td>{{ p.Ime }}</td>
+            <td>{{ p.Prezime }}</td>
+            <td>{{ p.Projekat }}</td>
+            <td>{{ p.Tim }}</td>
+            <td>{{ p.status }}</td>
+            <td><button class="PrimaryBtn" (click)="prihvati(p)" [disabled]="isAccepted(p.status)">Prihvati</button></td>
+            <td><button class="DangerBtn" (click)="odbij(p)" [disabled]="isRejected(p.status)">Odbij</button></td>
+          </tr>
+          <tr *ngIf="prijave.length === 0">
+            <td colspan="7">Trenutno nema novih prijava.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="AdminGrid">
+    <div class="Panel">
+      <h2 class="SectionTitle">{{ editingProjectId ? 'Izmena projekta' : 'Novi projekat' }}</h2>
+      <p class="Hint">Pri kreiranju novog projekta standardni timovi se dodaju automatski.</p>
+
+      <form class="ProjectForm" (ngSubmit)="saveProject()" #projectFormRef="ngForm">
+        <label>
+          Naziv projekta
+          <input type="text" [(ngModel)]="projectForm.naziv" name="naziv" required />
+        </label>
+
+        <label>
+          Datum početka
+          <input type="date" [(ngModel)]="projectForm.datumPocetka" name="datumPocetka" required />
+        </label>
+
+        <label>
+          Datum završetka
+          <input type="date" [(ngModel)]="projectForm.datumZavrsetka" name="datumZavrsetka" required />
+        </label>
+
+        <label>
+          Koordinator
+          <select [(ngModel)]="projectForm.odabraniKoordinatorId" name="odabraniKoordinatorId">
+            <option value="">Bez koordinatora</option>
+            <option *ngFor="let user of coordinators" [value]="user.id">
+              {{ user.ime }} {{ user.prezime }}
+            </option>
+          </select>
+        </label>
+
+        <div class="FormActions">
+          <button type="submit" class="PrimaryBtn" [disabled]="projectFormRef.invalid">
+            {{ editingProjectId ? 'Sačuvaj izmene' : 'Dodaj projekat' }}
+          </button>
+          <button type="button" class="GhostBtn" (click)="resetProjectForm()">Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="Panel">
+      <h2 class="SectionTitle">Aktivni projekti</h2>
+      <div class="TableWrap">
+        <table class="DataTable">
+          <thead>
+            <tr>
+              <th>Naziv</th>
+              <th>Početak</th>
+              <th>Završetak</th>
+              <th>Koordinator</th>
+              <th>Izmeni</th>
+              <th>Obriši</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let proj of activeProjects">
+              <td>{{ proj.naziv }}</td>
+              <td>{{ proj.datumPocetka }}</td>
+              <td>{{ proj.datumZavrsetka }}</td>
+              <td>{{ proj.odabraniKoordinator?.ime }} {{ proj.odabraniKoordinator?.prezime }}</td>
+              <td><button class="PrimaryBtn" (click)="startEdit(proj)">Izmeni</button></td>
+              <td><button class="DangerBtn" (click)="deleteProject(proj)">Obriši</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

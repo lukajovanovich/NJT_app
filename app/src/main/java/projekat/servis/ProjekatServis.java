@@ -1,32 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package projekat.servis;
 
-import projekat.DTO.ProjekatDTO;
-import projekat.Mapper.ProjekatMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import projekat.model.Projekat;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import projekat.DTO.ProjekatDTO;
+import projekat.Mapper.ProjekatMapper;
+import projekat.model.Projekat;
+import projekat.model.Tim;
 import projekat.repository.ProjekatRepository;
+import projekat.repository.TimRepository;
 
-/**
- *
- * @author Luka
- */
 @Service
 public class ProjekatServis {
 
     private final ProjekatRepository projekatRepository;
     private final ProjekatMapper projekatMapper;
+    private final TimRepository timRepository;
+    private final String defaultTeamNamesRaw;
 
-    @Autowired
-    public ProjekatServis(ProjekatRepository projekatRepository, ProjekatMapper projekatMapper) {
+    public ProjekatServis(
+            ProjekatRepository projekatRepository,
+            ProjekatMapper projekatMapper,
+            TimRepository timRepository,
+            @Value("${app.default-team-names:Analiza,Dizajn,Razvoj,Testiranje}") String defaultTeamNamesRaw
+    ) {
         this.projekatRepository = projekatRepository;
         this.projekatMapper = projekatMapper;
+        this.timRepository = timRepository;
+        this.defaultTeamNamesRaw = defaultTeamNamesRaw;
     }
 
     public List<ProjekatDTO> findAll() {
@@ -40,9 +46,11 @@ public class ProjekatServis {
         return projekatMapper.toDto(projekatRepository.findById(id));
     }
 
+    @Transactional
     public ProjekatDTO create(ProjekatDTO dto) {
         Projekat projekat = projekatMapper.toEntity(dto);
         projekatRepository.save(projekat);
+        kreirajPodrazumevaneTimove(projekat);
         return projekatMapper.toDto(projekat);
     }
 
@@ -50,9 +58,43 @@ public class ProjekatServis {
         projekatRepository.deleteById(id);
     }
 
+    @Transactional
     public ProjekatDTO update(ProjekatDTO dto) {
-        Projekat updated = projekatMapper.toEntity(dto);
-        projekatRepository.save(updated);
-        return projekatMapper.toDto(updated);
+        try {
+            Projekat postojeci = projekatRepository.findById(dto.getId());
+            postojeci.setNaziv(dto.getNaziv());
+            postojeci.setDatumPocetka(dto.getDatumPocetka());
+            postojeci.setDatumZavrsetka(dto.getDatumZavrsetka());
+            postojeci.setOdabraniKoordinator(
+                    dto.getOdabraniKoordinator() != null
+                            ? projekatMapper.toEntity(dto).getOdabraniKoordinator()
+                            : null
+            );
+            projekatRepository.save(postojeci);
+            return projekatMapper.toDto(postojeci);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(ex.getMessage(), ex);
+        }
+    }
+
+    private void kreirajPodrazumevaneTimove(Projekat projekat) {
+        for (String nazivTima : resolveTemplateTeamNames()) {
+            if (timRepository.findByNazivAndProjekat(nazivTima, projekat) == null) {
+                Tim tim = new Tim(0, nazivTima, null, projekat, new ArrayList<>());
+                timRepository.save(tim);
+            }
+        }
+    }
+
+    private List<String> resolveTemplateTeamNames() {
+        List<String> postojeciNazivi = timRepository.findDistinctNazivi();
+        if (!postojeciNazivi.isEmpty()) {
+            return postojeciNazivi;
+        }
+
+        return new ArrayList<>(new LinkedHashSet<>(Arrays.stream(defaultTeamNamesRaw.split(","))
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .collect(Collectors.toList())));
     }
 }

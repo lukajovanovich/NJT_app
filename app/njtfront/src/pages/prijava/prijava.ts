@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { API_BASE_URL } from '../../app/app.constants';
 
 interface Team {
   id: number;
@@ -19,7 +20,7 @@ interface BackendTeam {
 @Component({
   selector: 'app-prijava',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule],
   templateUrl: './prijava.html',
   styleUrls: ['./prijava.css'],
 })
@@ -62,7 +63,7 @@ export class Prijava implements OnInit {
     }
 
     this.loadingTeams = true;
-    this.http.get<BackendTeam[]>('http://localhost:8080/api/tim').subscribe({
+    this.http.get<BackendTeam[]>(`${API_BASE_URL}/api/tim`).subscribe({
       next: (data) => {
         this.teams = data
           .filter((team) => team.projekat?.id === this.projectId)
@@ -93,41 +94,26 @@ export class Prijava implements OnInit {
       return;
     }
 
-    const currentUserName = localStorage.getItem('currentUserName') || 'Nepoznat';
-    const parts = currentUserName.trim().split(' ');
-    const ime = currentUser.ime || parts[0] || 'Nepoznato';
-    const prezime = currentUser.prezime || (parts.length > 1 ? parts.slice(1).join(' ') : 'Nepoznato');
-
-    const mojePrijave: any[] = JSON.parse(localStorage.getItem('mojiProjekti') || '[]');
-    const noviId = mojePrijave.length === 0 ? 1 : Math.max(...mojePrijave.map((project) => project.id)) + 1;
-
-    const vecPostoji = mojePrijave.some(
-      (project) => project.clanId === this.clanId && project.teamId === team.id && project.status !== 'Odbijen'
-    );
-    if (vecPostoji) {
-      alert('Vec imate prijavu za ovaj tim.');
-      return;
-    }
-
-    mojePrijave.push({
-      id: noviId,
-      naziv: this.projectName,
-      tim: team.naziv,
-      teamId: team.id,
-      status: 'Prijavljen',
-      clanId: this.clanId,
-      clanoviTima: [
-        {
-          ime,
-          prezime,
-          email: currentUser.email || 'N/A',
-          brojTelefona: currentUser.brojTelefona || 'N/A',
+    this.http
+      .post(`${API_BASE_URL}/api/prijava`, {
+        clanId: this.clanId,
+        timId: team.id,
+      })
+      .subscribe({
+        next: () => {
+          alert(`Prijavili ste se za ${team.naziv} tim na projektu ${this.projectName}!`);
+          this.router.navigate(['/pocetna']);
         },
-      ],
-    });
+        error: (err) => {
+          console.error('Greska pri slanju prijave:', err);
 
-    localStorage.setItem('mojiProjekti', JSON.stringify(mojePrijave));
-    alert(`Prijavili ste se za ${team.naziv} tim na projektu ${this.projectName}!`);
-    this.router.navigate(['/pocetna']);
+          if (err.status === 409) {
+            alert('Vec imate aktivnu prijavu za ovaj tim.');
+            return;
+          }
+
+          alert('Doslo je do greske prilikom slanja prijave. Pokusajte ponovo.');
+        },
+      });
   }
 }

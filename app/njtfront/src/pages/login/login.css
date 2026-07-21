@@ -28,6 +28,11 @@ body {
   animation: pulse 1.5s infinite alternate;
 }
 
+.subtitle {
+  color: rgba(255, 255, 255, 0.78);
+  margin-bottom: 22px;
+}
+
 @keyframes pulse {
   from {
     text-shadow: 0 0 6px #007bff, 0 0 15px #007bff;
@@ -119,6 +124,28 @@ p {
 
 .RegisterContainer button {
   margin-top: 8px;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.role-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 123, 255, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.role-option input {
+  width: auto;
+  margin: 0;
 }
 
 .error {

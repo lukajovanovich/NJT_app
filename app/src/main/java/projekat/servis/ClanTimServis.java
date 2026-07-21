@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import projekat.DTO.ClanOrganizacijeDTO;
@@ -18,24 +18,38 @@ import projekat.model.Tim;
 import projekat.repository.ClanOrganizacijeRepository;
 import projekat.repository.ClanTimRepository;
 import projekat.repository.TimRepository;
+import projekat.security.AuthContextServis;
 
 @Service
 public class ClanTimServis {
 
-    @Autowired
-    private ClanTimRepository clanTimRepo;
+    private final ClanTimRepository clanTimRepo;
+    private final ClanOrganizacijeRepository clanRepo;
+    private final TimRepository timRepo;
+    private final ClanOrganizacijeMapper clanMapper;
+    private final AuthContextServis authContextServis;
 
-    @Autowired
-    private ClanOrganizacijeRepository clanRepo;
-
-    @Autowired
-    private TimRepository timRepo;
-
-    @Autowired
-    private ClanOrganizacijeMapper clanMapper;
+    public ClanTimServis(
+            ClanTimRepository clanTimRepo,
+            ClanOrganizacijeRepository clanRepo,
+            TimRepository timRepo,
+            ClanOrganizacijeMapper clanMapper,
+            AuthContextServis authContextServis
+    ) {
+        this.clanTimRepo = clanTimRepo;
+        this.clanRepo = clanRepo;
+        this.timRepo = timRepo;
+        this.clanMapper = clanMapper;
+        this.authContextServis = authContextServis;
+    }
 
     @Transactional(readOnly = true)
     public List<ClanTimPregledDTO> findByClanId(int clanId) {
+        ClanOrganizacije currentUser = authContextServis.getCurrentUser();
+        if (!authContextServis.isAdmin(currentUser) && currentUser.getId() != clanId) {
+            throw new AccessDeniedException("Nemate pristup tudjim timovima.");
+        }
+
         return new ArrayList<>(clanTimRepo.findByClan_Id(clanId).stream()
                 .filter(veza -> veza.getClan() != null && veza.getTim() != null)
                 .collect(Collectors.toMap(

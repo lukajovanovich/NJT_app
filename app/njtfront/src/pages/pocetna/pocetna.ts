@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { API_BASE_URL, APP_NAME } from '../../app/app.constants';
+import { getCurrentUser } from '../../app/auth-storage';
 
 interface Member {
+  id?: number;
   ime: string;
   prezime: string;
   email: string;
@@ -41,18 +44,32 @@ interface Project {
     prezime: string;
     email: string;
     brojTelefona: string;
-  };
+  } | null;
+}
+
+interface Task {
+  id: number;
+  naslov: string;
+  opis: string;
+  status: string;
+  projekatNaziv?: string | null;
+  timNaziv?: string | null;
+  kreirao?: Member;
+  datumKreiranja?: string;
 }
 
 @Component({
   selector: 'app-pocetna',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './pocetna.html',
   styleUrls: ['./pocetna.css'],
 })
 export class Pocetna implements OnInit {
+  readonly appName = APP_NAME;
+
   users: UserProject[] = [];
+  tasks: Task[] = [];
   activeProjects: Project[] = [];
   selectedProject: UserProject | null = null;
   private currentUserId: number | null = null;
@@ -60,19 +77,20 @@ export class Pocetna implements OnInit {
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    const storedUserId = Number(localStorage.getItem('currentUserId'));
-    if (!storedUserId) {
+    const currentUser = getCurrentUser();
+    if (!currentUser?.id) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.currentUserId = storedUserId;
+    this.currentUserId = currentUser.id;
     this.loadActiveProjects();
     this.loadUserProjects();
+    this.loadTasks();
   }
 
   loadActiveProjects() {
-    this.http.get<Project[]>('http://localhost:8080/api/projekat').subscribe({
+    this.http.get<Project[]>(`${API_BASE_URL}/api/projekat`).subscribe({
       next: (data) => {
         this.activeProjects = data.map((project) => ({
           ...project,
@@ -80,7 +98,7 @@ export class Pocetna implements OnInit {
           datumZavrsetka: this.formatDate(project.datumZavrsetka),
         }));
       },
-      error: (err) => console.error('Greska pri ucitavanju aktivnih projekata:', err),
+      error: (err) => console.error('Greška pri učitavanju aktivnih projekata:', err),
     });
   }
 
@@ -90,43 +108,50 @@ export class Pocetna implements OnInit {
       return;
     }
 
-    const clanId = this.currentUserId;
-    const lokalnePrijave: UserProject[] = JSON.parse(localStorage.getItem('mojiProjekti') || '[]').filter(
-      (project: UserProject) => project.clanId === clanId
-    );
-
-    this.http.get<BackendUserProject[]>(`http://localhost:8080/api/clanTim/byClanDTO/${clanId}`).subscribe({
+    this.http.get<BackendUserProject[]>(`${API_BASE_URL}/api/prijava/byClan/${this.currentUserId}`).subscribe({
       next: (data) => {
-        const prijaveIzBaze: UserProject[] = data.map((membership) => ({
+        this.users = data.map((membership) => ({
           id: membership.id,
           naziv: membership.naziv || 'Nepoznat projekat',
           tim: membership.tim || 'Nepoznat tim',
-          status: membership.status || 'Prihvacen',
-          clanId: membership.clanId || clanId,
+          status: membership.status || 'Prijavljen',
+          clanId: membership.clanId || this.currentUserId!,
           teamId: membership.timId,
           clanoviTima: (membership.clanoviTima || []).map((member) => ({
+            id: member.id,
             ime: member.ime || 'Nepoznato',
             prezime: member.prezime || '',
             email: member.email || '',
             brojTelefona: member.brojTelefona || '',
           })),
         }));
-
-        const prihvaceniTimoviIzBaze = new Set(
-          prijaveIzBaze
-            .map((project) => project.teamId)
-            .filter((teamId): teamId is number => teamId !== undefined)
-        );
-
-        const lokalneBezDuplikata = lokalnePrijave.filter(
-          (project) =>
-            !(this.isAccepted(project.status) && project.teamId !== undefined && prihvaceniTimoviIzBaze.has(project.teamId))
-        );
-
-        this.users = [...lokalneBezDuplikata, ...prijaveIzBaze];
       },
       error: () => {
-        this.users = lokalnePrijave;
+        this.users = [];
+      },
+    });
+  }
+
+  loadTasks() {
+    this.http.get<Task[]>(`${API_BASE_URL}/api/zadatak/my/assigned`).subscribe({
+      next: (data) => {
+        this.tasks = data;
+      },
+      error: (err) => {
+        console.error('Greška pri učitavanju zadataka:', err);
+        this.tasks = [];
+      },
+    });
+  }
+
+  updateTaskStatus(task: Task, status: 'Uradjen' | 'Nije uradjen') {
+    this.http.put<Task>(`${API_BASE_URL}/api/zadatak/my/${task.id}/status`, { status }).subscribe({
+      next: (updatedTask) => {
+        this.tasks = this.tasks.map((item) => (item.id === updatedTask.id ? updatedTask : item));
+      },
+      error: (err) => {
+        console.error('Greška pri promeni statusa zadatka:', err);
+        alert('Došlo je do greške pri promeni statusa zadatka.');
       },
     });
   }

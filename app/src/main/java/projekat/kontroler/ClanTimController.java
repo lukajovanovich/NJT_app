@@ -2,6 +2,9 @@ package projekat.kontroler;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +26,11 @@ public class ClanTimController {
 
     @GetMapping("/byClanDTO/{clanId}")
     public List<ClanTimPregledDTO> findByClanId(@PathVariable int clanId) {
-        return clanTimServis.findByClanId(clanId);
+        try {
+            return clanTimServis.findByClanId(clanId);
+        } catch (AccessDeniedException ex) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, ex.getMessage());
+        }
     }
 
     @PostMapping("/povezi")

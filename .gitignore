@@ -1,2 +1,3 @@
 .agents/
 app/target/
+app/local/application-mail.properties

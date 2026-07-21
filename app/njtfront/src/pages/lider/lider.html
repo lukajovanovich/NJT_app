@@ -1,0 +1,80 @@
+<div class="LiderContainer">
+  <div class="PageIntro">
+    <h1 class="NeonFlicker">{{ appName }} / Team leader</h1>
+    <p>Dodela taskova korisnicima i pregled statusa izvršenja.</p>
+  </div>
+
+  <div class="LiderGrid">
+    <div class="Panel">
+      <h2 class="SectionTitle">Novi task</h2>
+      <form class="TaskForm" (ngSubmit)="createTask()" #taskFormRef="ngForm">
+        <label>
+          Naslov
+          <input type="text" [(ngModel)]="taskForm.naslov" name="naslov" required />
+        </label>
+
+        <label>
+          Opis
+          <textarea rows="4" [(ngModel)]="taskForm.opis" name="opis"></textarea>
+        </label>
+
+        <label>
+          Dodeli korisniku
+          <select [(ngModel)]="taskForm.dodeljenClanuId" name="dodeljenClanuId" required>
+            <option value="">Odaberi korisnika</option>
+            <option *ngFor="let user of users" [value]="user.id">
+              {{ user.ime }} {{ user.prezime }}
+            </option>
+          </select>
+        </label>
+
+        <label>
+          Projekat
+          <select [(ngModel)]="taskForm.projekatId" name="projekatId">
+            <option value="">Bez projekta</option>
+            <option *ngFor="let project of projects" [value]="project.id">{{ project.naziv }}</option>
+          </select>
+        </label>
+
+        <label>
+          Tim
+          <select [(ngModel)]="taskForm.timId" name="timId">
+            <option value="">Bez tima</option>
+            <option *ngFor="let team of availableTeams" [value]="team.id">{{ team.naziv }}</option>
+          </select>
+        </label>
+
+        <button type="submit" class="PrimaryBtn" [disabled]="taskFormRef.invalid">Dodeli task</button>
+      </form>
+    </div>
+
+    <div class="Panel">
+      <h2 class="SectionTitle">Kreirani taskovi</h2>
+      <div class="TableWrap">
+        <table class="DataTable">
+          <thead>
+            <tr>
+              <th>Naslov</th>
+              <th>Korisnik</th>
+              <th>Projekat</th>
+              <th>Tim</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let task of createdTasks">
+              <td>{{ task.naslov }}</td>
+              <td>{{ task.dodeljenClanu?.ime }} {{ task.dodeljenClanu?.prezime }}</td>
+              <td>{{ task.projekatNaziv || '-' }}</td>
+              <td>{{ task.timNaziv || '-' }}</td>
+              <td>{{ task.status }}</td>
+            </tr>
+            <tr *ngIf="createdTasks.length === 0">
+              <td colspan="5">Još nema kreiranih taskova.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

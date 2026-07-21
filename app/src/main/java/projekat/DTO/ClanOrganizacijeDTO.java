@@ -22,6 +22,7 @@ public class ClanOrganizacijeDTO implements Dto {
     private String brojTelefona;
 
     private boolean uo;
+    private boolean teamLeader;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String sifra;
@@ -37,6 +38,7 @@ public class ClanOrganizacijeDTO implements Dto {
             String email,
             String brojTelefona,
             boolean uo,
+            boolean teamLeader,
             String sifra,
             List<TimDTO> timovi
     ) {
@@ -46,6 +48,7 @@ public class ClanOrganizacijeDTO implements Dto {
         this.email = email;
         this.brojTelefona = brojTelefona;
         this.uo = uo;
+        this.teamLeader = teamLeader;
         this.sifra = sifra;
         this.timovi = timovi;
     }
@@ -67,6 +70,9 @@ public class ClanOrganizacijeDTO implements Dto {
 
     public boolean isUo() { return uo; }
     public void setUo(boolean uo) { this.uo = uo; }
+
+    public boolean isTeamLeader() { return teamLeader; }
+    public void setTeamLeader(boolean teamLeader) { this.teamLeader = teamLeader; }
 
     public String getSifra() { return sifra; }
     public void setSifra(String sifra) { this.sifra = sifra; }

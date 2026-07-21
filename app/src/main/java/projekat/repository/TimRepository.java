@@ -64,4 +64,11 @@ public class TimRepository implements MyAppRepository<Tim, Integer> {
                 .getResultList();
         return timovi.isEmpty() ? null : timovi.get(0);
     }
+
+    public List<String> findDistinctNazivi() {
+        return entityManager.createQuery(
+                "SELECT DISTINCT t.naziv FROM Tim t WHERE t.naziv IS NOT NULL AND t.naziv <> '' ORDER BY t.naziv",
+                String.class
+        ).getResultList();
+    }
 }

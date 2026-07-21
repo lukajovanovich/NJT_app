@@ -1,13 +1,11 @@
 package projekat.kontroler;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import projekat.DTO.AuthResponseDTO;
 import projekat.DTO.ClanOrganizacijeDTO;
 import projekat.DTO.LoginDTO;
 import projekat.servis.ClanOrganizacijeServis;
@@ -35,15 +34,13 @@ public class ClanOrganizacijeController {
 
     @GetMapping
     public ResponseEntity<List<ClanOrganizacijeDTO>> getAll() {
-        List<ClanOrganizacijeDTO> all = clanService.findAll();
-        return new ResponseEntity<>(all, HttpStatus.OK);
+        return new ResponseEntity<>(clanService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ClanOrganizacijeDTO> getById(@NotNull @PathVariable("id") int id) {
         try {
-            ClanOrganizacijeDTO dto = clanService.findById(id);
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            return new ResponseEntity<>(clanService.findById(id), HttpStatus.OK);
         } catch (Exception ex) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -57,6 +54,8 @@ public class ClanOrganizacijeController {
         try {
             ClanOrganizacijeDTO saved = clanService.create(clanDto);
             return new ResponseEntity<>(saved, HttpStatus.CREATED);
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.getMessage());
         } catch (Exception ex) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -83,6 +82,8 @@ public class ClanOrganizacijeController {
         try {
             ClanOrganizacijeDTO updated = clanService.update(clanDto);
             return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ex.getMessage());
         } catch (Exception ex) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -92,18 +93,16 @@ public class ClanOrganizacijeController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         try {
-            ClanOrganizacijeDTO korisnik = clanService.login(loginDTO.getEmail(), loginDTO.getSifra());
-
-            if (korisnik != null) {
-                return ResponseEntity.ok(korisnik);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Pogresan email ili sifra");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Greska na serveru: " + e.getMessage());
+            return ResponseEntity.ok(clanService.login(loginDTO.getEmail(), loginDTO.getSifra()));
+        } catch (AccessDeniedException ex) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        } catch (Exception ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Greska na serveru: " + ex.getMessage()
+            );
         }
     }
 }

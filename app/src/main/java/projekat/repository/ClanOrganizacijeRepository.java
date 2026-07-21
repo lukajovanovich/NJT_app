@@ -1,22 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package projekat.repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Repository;
 import java.util.List;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import projekat.model.ClanOrganizacije;
 
-/**
- *
- * @author Luka
- */
 @Repository
 public class ClanOrganizacijeRepository implements MyAppRepository<ClanOrganizacije, Integer> {
 
@@ -41,7 +31,7 @@ public class ClanOrganizacijeRepository implements MyAppRepository<ClanOrganizac
     @Override
     @Transactional
     public void save(ClanOrganizacije entity) {
-        if (entity.getId() == -1) {
+        if (entity.getId() <= 0) {
             entityManager.persist(entity);
         } else {
             entityManager.merge(entity);
@@ -57,15 +47,39 @@ public class ClanOrganizacijeRepository implements MyAppRepository<ClanOrganizac
         }
     }
 
-    // ✅ DODATO: metoda za login proveru
     public ClanOrganizacije findByEmailAndSifra(String email, String sifra) {
         List<ClanOrganizacije> result = entityManager.createQuery(
-            "SELECT c FROM ClanOrganizacije c WHERE c.email = :email AND c.sifra = :sifra",
-            ClanOrganizacije.class)
-            .setParameter("email", email)
-            .setParameter("sifra", sifra)
-            .getResultList();
+                "SELECT c FROM ClanOrganizacije c WHERE c.email = :email AND c.sifra = :sifra",
+                ClanOrganizacije.class
+        )
+                .setParameter("email", email)
+                .setParameter("sifra", sifra)
+                .getResultList();
 
         return result.isEmpty() ? null : result.get(0);
+    }
+
+    public ClanOrganizacije findByEmail(String email) {
+        List<ClanOrganizacije> result = entityManager.createQuery(
+                "SELECT c FROM ClanOrganizacije c WHERE c.email = :email",
+                ClanOrganizacije.class
+        )
+                .setParameter("email", email)
+                .getResultList();
+
+        return result.isEmpty() ? null : result.get(0);
+    }
+
+    public List<String> findUoEmails() {
+        return entityManager.createQuery(
+                """
+                SELECT c.email
+                FROM ClanOrganizacije c
+                WHERE c.uo = true
+                  AND c.email IS NOT NULL
+                  AND c.email <> ''
+                """,
+                String.class
+        ).getResultList();
     }
 }

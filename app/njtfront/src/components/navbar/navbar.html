@@ -1,17 +1,19 @@
 <nav class="Navigacija">
   <div class="NavLeft">
-    <a (click)="goHome()" style="cursor:pointer">
-      <img alt="Logo" class="nav-logo" />
+    <a class="brand-link" (click)="goHome()">
+      <div class="brand-mark">AP</div>
+      <div>
+        <p class="brand-eyebrow">Platforma</p>
+        <h1>{{ appName }}</h1>
+      </div>
     </a>
-
-    <!-- prikaz poruke samo ako je korisnik ulogovan -->
-    <h1 *ngIf="isLoggedIn">
-      Dobro došao, {{ userName }}!
-    </h1>
   </div>
 
-  <div class="NavRight">
-    <!-- dugme logout prikazano samo ako je korisnik ulogovan -->
-    <button *ngIf="isLoggedIn" class="NeonSignOut" (click)="onLogout()">Logout</button>
+  <div class="NavRight" *ngIf="isLoggedIn">
+    <span class="welcome">Dobro došao, {{ userName }}.</span>
+    <button class="NavButton" (click)="goHome()">Početna</button>
+    <button class="NavButton" *ngIf="canOpenLeader" (click)="openLeader()">Lider</button>
+    <button class="NavButton" *ngIf="canOpenAdmin" (click)="openAdmin()">Admin</button>
+    <button class="NeonSignOut" (click)="onLogout()">Logout</button>
   </div>
 </nav>

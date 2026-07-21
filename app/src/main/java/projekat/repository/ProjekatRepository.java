@@ -38,7 +38,7 @@ public class ProjekatRepository implements MyAppRepository<Projekat, Integer> {
     @Override
     @Transactional
     public void save(Projekat entity) {
-        if (entity.getId() == -1) {
+        if (entity.getId() <= 0) {
             entityManager.persist(entity);
         } else {
             entityManager.merge(entity);

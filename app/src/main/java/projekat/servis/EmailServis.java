@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import projekat.model.Prijava;
+import projekat.model.Zadatak;
 import projekat.repository.ClanOrganizacijeRepository;
 
 @Service
@@ -50,7 +51,7 @@ public class EmailServis {
     }
 
     public void posaljiAdminObavestenjeONovojPrijavi(Prijava prijava) {
-        Set<String> primaoci = new LinkedHashSet<>(clanRepo.findUoEmails());
+        Set<String> primaoci = new LinkedHashSet<>(clanRepo.findAdminEmails());
         primaoci.addAll(dodatniAdminPrimaoci);
 
         String nazivProjekta = prijava.getTim() != null && prijava.getTim().getProjekat() != null
@@ -121,6 +122,43 @@ public class EmailServis {
         );
 
         send(List.of(prijava.getClan().getEmail()), subject, text);
+    }
+
+    public void posaljiObavestenjeONovomZadatku(Zadatak zadatak) {
+        if (zadatak.getDodeljenClanu() == null
+                || zadatak.getDodeljenClanu().getEmail() == null
+                || zadatak.getDodeljenClanu().getEmail().isBlank()) {
+            LOGGER.info("Zadatak {} nema email dodeljenog clana, preskacem slanje obavestenja.", zadatak.getId());
+            return;
+        }
+
+        String nazivProjekta = zadatak.getProjekat() != null ? zadatak.getProjekat().getNaziv() : "Nepoznat projekat";
+        String nazivTima = zadatak.getTim() != null ? zadatak.getTim().getNaziv() : "Nepoznat tim";
+
+        String subject = String.format("[%s] Dodeljen vam je novi zadatak: %s", appName, zadatak.getNaslov());
+        String text = String.format(
+                """
+                Zdravo %s,
+
+                Dodeljen vam je novi zadatak.
+
+                Naslov: %s
+                Opis: %s
+                Projekat: %s
+                Tim: %s
+
+                Pozdrav,
+                %s
+                """,
+                zadatak.getDodeljenClanu().getIme(),
+                zadatak.getNaslov(),
+                zadatak.getOpis() == null || zadatak.getOpis().isBlank() ? "Bez opisa" : zadatak.getOpis(),
+                nazivProjekta,
+                nazivTima,
+                appName
+        );
+
+        send(List.of(zadatak.getDodeljenClanu().getEmail()), subject, text);
     }
 
     private void send(Collection<String> recipients, String subject, String text) {

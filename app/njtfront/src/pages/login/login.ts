@@ -28,7 +28,7 @@ export class LoginPage {
     email: '',
     sifra: '',
     brojTelefona: '',
-    uo: false,
+    admin: false,
     teamLeader: false,
   };
 
@@ -48,8 +48,8 @@ export class LoginPage {
         saveAuth(response);
         const user = response.korisnik;
 
-        if (user.uo) {
-          this.router.navigate(['/uo']);
+        if (user.admin) {
+          this.router.navigate(['/admin']);
         } else if (user.teamLeader) {
           this.router.navigate(['/lider']);
         } else {
@@ -84,7 +84,7 @@ export class LoginPage {
           email: '',
           sifra: '',
           brojTelefona: '',
-          uo: false,
+          admin: false,
           teamLeader: false,
         };
       },

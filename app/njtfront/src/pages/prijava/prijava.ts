@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { API_BASE_URL } from '../../app/app.constants';
+import { getCurrentUser } from '../../app/auth-storage';
 
 interface Team {
   id: number;
@@ -30,6 +31,7 @@ export class Prijava implements OnInit {
   teams: Team[] = [];
   loadingTeams = true;
   clanId: number | null = null;
+  submittingTeamId: number | null = null;
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
     this.route.paramMap.subscribe((params) => {
@@ -44,14 +46,14 @@ export class Prijava implements OnInit {
   }
 
   ngOnInit() {
-    const storedUserId = Number(localStorage.getItem('currentUserId'));
-    if (!storedUserId) {
+    const currentUser = getCurrentUser();
+    if (!currentUser?.id) {
       alert('Morate biti ulogovani da biste se prijavili na tim.');
       this.router.navigate(['/login']);
       return;
     }
 
-    this.clanId = storedUserId;
+    this.clanId = currentUser.id;
     this.loadTeams();
   }
 
@@ -87,16 +89,22 @@ export class Prijava implements OnInit {
       return;
     }
 
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const currentUser = getCurrentUser();
     if (!currentUser?.id) {
       alert('Morate biti ulogovani da biste se prijavili na tim.');
       this.router.navigate(['/login']);
       return;
     }
 
+    if (this.submittingTeamId === team.id) {
+      return;
+    }
+
+    this.submittingTeamId = team.id;
+
     this.http
       .post(`${API_BASE_URL}/api/prijava`, {
-        clanId: this.clanId,
+        clanId: currentUser.id,
         timId: team.id,
       })
       .subscribe({
@@ -112,7 +120,16 @@ export class Prijava implements OnInit {
             return;
           }
 
+          if (err.status === 401 || err.status === 403) {
+            alert('Sesija je istekla. Prijavite se ponovo.');
+            this.router.navigate(['/login']);
+            return;
+          }
+
           alert('Doslo je do greske prilikom slanja prijave. Pokusajte ponovo.');
+        },
+        complete: () => {
+          this.submittingTeamId = null;
         },
       });
   }

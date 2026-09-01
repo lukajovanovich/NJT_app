@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/clan-organizacije/login", "/api/clan-organizacije").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/projekat",
@@ -42,16 +43,17 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/projekat", "/api/tim").hasRole(SecurityRoles.UO)
-                        .requestMatchers(HttpMethod.PUT, "/api/projekat", "/api/tim").hasRole(SecurityRoles.UO)
-                        .requestMatchers(HttpMethod.DELETE, "/api/projekat/*", "/api/tim/*").hasRole(SecurityRoles.UO)
-                        .requestMatchers("/api/prijava/pending", "/api/prijava/*/status").hasRole(SecurityRoles.UO)
+                        .requestMatchers(HttpMethod.POST, "/api/projekat", "/api/tim").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers(HttpMethod.PUT, "/api/projekat", "/api/tim").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/api/projekat/*", "/api/tim/*").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers("/api/prijava/pending", "/api/prijava/*/status").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/api/clan-organizacije/rang-lista").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/clan-organizacije", "/api/clan-organizacije/*")
-                        .hasAnyRole(SecurityRoles.UO, SecurityRoles.TEAM_LEADER)
-                        .requestMatchers(HttpMethod.PUT, "/api/clan-organizacije").hasAnyRole(SecurityRoles.UO, SecurityRoles.TEAM_LEADER)
-                        .requestMatchers(HttpMethod.DELETE, "/api/clan-organizacije/*").hasRole(SecurityRoles.UO)
-                        .requestMatchers("/api/clanTim/povezi").hasRole(SecurityRoles.UO)
-                        .requestMatchers("/api/zadatak/leader/**").hasAnyRole(SecurityRoles.UO, SecurityRoles.TEAM_LEADER)
+                        .hasAnyRole(SecurityRoles.ADMIN, SecurityRoles.TEAM_LEADER)
+                        .requestMatchers(HttpMethod.PUT, "/api/clan-organizacije").hasAnyRole(SecurityRoles.ADMIN, SecurityRoles.TEAM_LEADER)
+                        .requestMatchers(HttpMethod.DELETE, "/api/clan-organizacije/*").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers("/api/clanTim/povezi").hasRole(SecurityRoles.ADMIN)
+                        .requestMatchers("/api/zadatak/leader/**").hasAnyRole(SecurityRoles.ADMIN, SecurityRoles.TEAM_LEADER)
                         .requestMatchers("/api/zadatak/my/**", "/api/prijava/**", "/api/clanTim/**").authenticated()
                         .anyRequest().authenticated()
                 )

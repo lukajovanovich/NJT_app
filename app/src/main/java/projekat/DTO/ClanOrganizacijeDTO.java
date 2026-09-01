@@ -21,8 +21,9 @@ public class ClanOrganizacijeDTO implements Dto {
     @NotEmpty(message = "Broj telefona je obavezan.")
     private String brojTelefona;
 
-    private boolean uo;
+    private boolean admin;
     private boolean teamLeader;
+    private int bodovi;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String sifra;
@@ -37,8 +38,9 @@ public class ClanOrganizacijeDTO implements Dto {
             String prezime,
             String email,
             String brojTelefona,
-            boolean uo,
+            boolean admin,
             boolean teamLeader,
+            int bodovi,
             String sifra,
             List<TimDTO> timovi
     ) {
@@ -47,8 +49,9 @@ public class ClanOrganizacijeDTO implements Dto {
         this.prezime = prezime;
         this.email = email;
         this.brojTelefona = brojTelefona;
-        this.uo = uo;
+        this.admin = admin;
         this.teamLeader = teamLeader;
+        this.bodovi = bodovi;
         this.sifra = sifra;
         this.timovi = timovi;
     }
@@ -68,11 +71,14 @@ public class ClanOrganizacijeDTO implements Dto {
     public String getBrojTelefona() { return brojTelefona; }
     public void setBrojTelefona(String brojTelefona) { this.brojTelefona = brojTelefona; }
 
-    public boolean isUo() { return uo; }
-    public void setUo(boolean uo) { this.uo = uo; }
+    public boolean isAdmin() { return admin; }
+    public void setAdmin(boolean admin) { this.admin = admin; }
 
     public boolean isTeamLeader() { return teamLeader; }
     public void setTeamLeader(boolean teamLeader) { this.teamLeader = teamLeader; }
+
+    public int getBodovi() { return bodovi; }
+    public void setBodovi(int bodovi) { this.bodovi = bodovi; }
 
     public String getSifra() { return sifra; }
     public void setSifra(String sifra) { this.sifra = sifra; }

@@ -32,7 +32,7 @@ public class JwtServis {
         return Jwts.builder()
                 .setSubject(korisnik.getEmail())
                 .claim("userId", korisnik.getId())
-                .claim("uo", korisnik.isUo())
+                .claim("admin", korisnik.isAdmin())
                 .claim("teamLeader", korisnik.isTeamLeader())
                 .setIssuedAt(now)
                 .setExpiration(expiry)

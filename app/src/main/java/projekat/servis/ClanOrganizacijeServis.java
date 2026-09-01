@@ -1,5 +1,6 @@
 package projekat.servis;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,7 +11,11 @@ import projekat.DTO.AuthResponseDTO;
 import projekat.DTO.ClanOrganizacijeDTO;
 import projekat.Mapper.ClanOrganizacijeMapper;
 import projekat.model.ClanOrganizacije;
+import projekat.model.Prijava;
+import projekat.model.Zadatak;
 import projekat.repository.ClanOrganizacijeRepository;
+import projekat.repository.PrijavaRepository;
+import projekat.repository.ZadatakRepository;
 import projekat.security.JwtServis;
 
 @Service
@@ -20,17 +25,23 @@ public class ClanOrganizacijeServis {
     private final ClanOrganizacijeMapper clanOrganizacijeMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtServis jwtServis;
+    private final PrijavaRepository prijavaRepository;
+    private final ZadatakRepository zadatakRepository;
 
     public ClanOrganizacijeServis(
             ClanOrganizacijeRepository clanOrganizacijeRepository,
             ClanOrganizacijeMapper clanOrganizacijeMapper,
             PasswordEncoder passwordEncoder,
-            JwtServis jwtServis
+            JwtServis jwtServis,
+            PrijavaRepository prijavaRepository,
+            ZadatakRepository zadatakRepository
     ) {
         this.clanOrganizacijeRepository = clanOrganizacijeRepository;
         this.clanOrganizacijeMapper = clanOrganizacijeMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtServis = jwtServis;
+        this.prijavaRepository = prijavaRepository;
+        this.zadatakRepository = zadatakRepository;
     }
 
     public List<ClanOrganizacijeDTO> findAll() {
@@ -42,6 +53,15 @@ public class ClanOrganizacijeServis {
 
     public ClanOrganizacijeDTO findById(int id) throws Exception {
         return clanOrganizacijeMapper.toDto(clanOrganizacijeRepository.findById(id));
+    }
+
+    public List<ClanOrganizacijeDTO> findRangLista() {
+        return clanOrganizacijeRepository.findAll()
+                .stream()
+                .filter(clan -> !clan.isAdmin())
+                .sorted(Comparator.comparingInt(ClanOrganizacije::getBodovi).reversed())
+                .map(clanOrganizacijeMapper::toDtoBasic)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -58,7 +78,18 @@ public class ClanOrganizacijeServis {
         return clanOrganizacijeMapper.toDtoBasic(clan);
     }
 
+    @Transactional
     public void deleteById(int id) {
+        for (Prijava prijava : prijavaRepository.findByClanId(id)) {
+            prijavaRepository.deleteById(prijava.getId());
+        }
+        for (Zadatak zadatak : zadatakRepository.findByDodeljenClanuId(id)) {
+            zadatakRepository.deleteById(zadatak.getId());
+        }
+        for (Zadatak zadatak : zadatakRepository.findByKreiraoId(id)) {
+            zadatakRepository.deleteById(zadatak.getId());
+        }
+
         clanOrganizacijeRepository.deleteById(id);
     }
 
@@ -72,7 +103,7 @@ public class ClanOrganizacijeServis {
             postojeci.setPrezime(dto.getPrezime());
             postojeci.setEmail(dto.getEmail());
             postojeci.setBrojTelefona(dto.getBrojTelefona());
-            postojeci.setUo(dto.isUo());
+            postojeci.setAdmin(dto.isAdmin());
             postojeci.setTeamLeader(dto.isTeamLeader());
 
             if (dto.getSifra() != null && !dto.getSifra().isBlank()) {

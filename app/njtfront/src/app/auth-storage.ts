@@ -4,7 +4,7 @@ export interface AuthUser {
   prezime: string;
   email: string;
   brojTelefona: string;
-  uo: boolean;
+  admin: boolean;
   teamLeader: boolean;
 }
 
@@ -31,6 +31,34 @@ export function getToken(): string | null {
   return localStorage.getItem('authToken');
 }
 
+function isTokenExpired(token: string): boolean {
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    return true;
+  }
+
+  try {
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (typeof payload.exp !== 'number') {
+      return true;
+    }
+
+    return payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
+export function hasValidSession(): boolean {
+  const token = getToken();
+  if (!token || isTokenExpired(token)) {
+    clearAuth();
+    return false;
+  }
+
+  return !!getCurrentUser();
+}
+
 export function getCurrentUser(): AuthUser | null {
   const rawUser = localStorage.getItem('currentUser');
   if (!rawUser) {
@@ -45,7 +73,7 @@ export function getCurrentUser(): AuthUser | null {
 }
 
 export function isAdmin(user: AuthUser | null = getCurrentUser()): boolean {
-  return !!user?.uo;
+  return !!user?.admin;
 }
 
 export function isTeamLeader(user: AuthUser | null = getCurrentUser()): boolean {

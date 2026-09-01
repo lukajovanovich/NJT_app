@@ -17,6 +17,7 @@ interface Team {
   projekat?: {
     id: number;
   };
+  clanoviTimaIds?: { id: number; ime: string; prezime: string }[];
 }
 
 interface Task {
@@ -57,7 +58,7 @@ export class LiderPage implements OnInit {
 
   ngOnInit(): void {
     const currentUser = getCurrentUser();
-    if (!currentUser?.id || (!currentUser.teamLeader && !currentUser.uo)) {
+    if (!currentUser?.id || (!currentUser.teamLeader && !currentUser.admin)) {
       this.router.navigate(['/login']);
       return;
     }
@@ -76,10 +77,30 @@ export class LiderPage implements OnInit {
     return this.teams.filter((team) => team.projekat?.id === Number(this.taskForm.projekatId));
   }
 
+  get availableUsers(): AuthUser[] {
+    if (!this.taskForm.timId) {
+      return [];
+    }
+
+    const selectedTeam = this.teams.find((team) => team.id === Number(this.taskForm.timId));
+    const memberIds = new Set((selectedTeam?.clanoviTimaIds || []).map((member) => member.id));
+
+    return this.users.filter((user) => memberIds.has(user.id));
+  }
+
+  onProjectChange() {
+    this.taskForm.timId = '';
+    this.taskForm.dodeljenClanuId = '';
+  }
+
+  onTeamChange() {
+    this.taskForm.dodeljenClanuId = '';
+  }
+
   loadUsers() {
     this.http.get<AuthUser[]>(`${API_BASE_URL}/api/clan-organizacije`).subscribe({
       next: (data) => {
-        this.users = data.filter((user) => !user.uo);
+        this.users = data.filter((user) => !user.admin);
       },
       error: (err) => console.error('Greška pri učitavanju korisnika:', err),
     });

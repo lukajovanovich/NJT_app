@@ -11,7 +11,7 @@ import jakarta.persistence.*;
  * @author Luka
  */
 @Entity
-@Table(name = "clan_tim")
+@Table(name = "clan_tim", uniqueConstraints = @UniqueConstraint(columnNames = {"clan_id", "tim_id"}))
 public class ClanTim {
 
     @Id

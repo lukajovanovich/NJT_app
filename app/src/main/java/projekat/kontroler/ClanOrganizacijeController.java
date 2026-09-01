@@ -37,6 +37,11 @@ public class ClanOrganizacijeController {
         return new ResponseEntity<>(clanService.findAll(), HttpStatus.OK);
     }
 
+    @GetMapping("/rang-lista")
+    public ResponseEntity<List<ClanOrganizacijeDTO>> getRangLista() {
+        return new ResponseEntity<>(clanService.findRangLista(), HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ClanOrganizacijeDTO> getById(@NotNull @PathVariable("id") int id) {
         try {

@@ -1,11 +1,11 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { getCurrentUser, getToken, isAdmin, isTeamLeader } from './auth-storage';
+import { getCurrentUser, hasValidSession, isAdmin, isTeamLeader } from './auth-storage';
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
 
-  if (getToken() && getCurrentUser()) {
+  if (hasValidSession()) {
     return true;
   }
 
@@ -16,7 +16,7 @@ export const adminGuard: CanActivateFn = () => {
   const router = inject(Router);
   const user = getCurrentUser();
 
-  if (getToken() && isAdmin(user)) {
+  if (hasValidSession() && isAdmin(user)) {
     return true;
   }
 
@@ -27,7 +27,7 @@ export const leaderGuard: CanActivateFn = () => {
   const router = inject(Router);
   const user = getCurrentUser();
 
-  if (getToken() && (isTeamLeader(user) || isAdmin(user))) {
+  if (hasValidSession() && (isTeamLeader(user) || isAdmin(user))) {
     return true;
   }
 

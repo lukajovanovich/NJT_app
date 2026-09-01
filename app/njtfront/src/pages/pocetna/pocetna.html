@@ -78,11 +78,43 @@
             <td>{{ task.projekatNaziv || '-' }}</td>
             <td>{{ task.timNaziv || '-' }}</td>
             <td>{{ task.status }}</td>
-            <td><button class="PrimaryBtn" (click)="updateTaskStatus(task, 'Uradjen')">Da</button></td>
-            <td><button class="DangerBtn" (click)="updateTaskStatus(task, 'Nije uradjen')">Ne</button></td>
+            <td>
+              <button *ngIf="isTaskPending(task.status)" class="PrimaryBtn" (click)="updateTaskStatus(task, 'Uradjen')">Da</button>
+            </td>
+            <td>
+              <button *ngIf="isTaskPending(task.status)" class="DangerBtn" (click)="updateTaskStatus(task, 'Nije uradjen')">Ne</button>
+            </td>
           </tr>
           <tr *ngIf="tasks.length === 0">
             <td colspan="7">Trenutno nema dodeljenih taskova.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="Panel">
+    <h2 class="SectionTitle">Rang lista</h2>
+    <p class="Hint">Poeni: +10 za urađen zadatak, -3 za neurađen.</p>
+    <div class="TabelaContainer">
+      <table class="DataTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Bodovi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let clan of rangLista; let i = index" [class.MyRow]="clan.id === currentUserId">
+            <td>{{ i + 1 }}</td>
+            <td>{{ clan.ime }}</td>
+            <td>{{ clan.prezime }}</td>
+            <td>{{ clan.bodovi }}</td>
+          </tr>
+          <tr *ngIf="rangLista.length === 0">
+            <td colspan="4">Trenutno nema podataka za rang listu.</td>
           </tr>
         </tbody>
       </table>

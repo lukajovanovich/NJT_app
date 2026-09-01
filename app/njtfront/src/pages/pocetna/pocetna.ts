@@ -58,6 +58,13 @@ interface Task {
   datumKreiranja?: string;
 }
 
+interface RangListaClan {
+  id: number;
+  ime: string;
+  prezime: string;
+  bodovi: number;
+}
+
 @Component({
   selector: 'app-pocetna',
   standalone: true,
@@ -71,8 +78,9 @@ export class Pocetna implements OnInit {
   users: UserProject[] = [];
   tasks: Task[] = [];
   activeProjects: Project[] = [];
+  rangLista: RangListaClan[] = [];
   selectedProject: UserProject | null = null;
-  private currentUserId: number | null = null;
+  currentUserId: number | null = null;
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -87,6 +95,19 @@ export class Pocetna implements OnInit {
     this.loadActiveProjects();
     this.loadUserProjects();
     this.loadTasks();
+    this.loadRangLista();
+  }
+
+  loadRangLista() {
+    this.http.get<RangListaClan[]>(`${API_BASE_URL}/api/clan-organizacije/rang-lista`).subscribe({
+      next: (data) => {
+        this.rangLista = data;
+      },
+      error: (err) => {
+        console.error('Greška pri učitavanju rang liste:', err);
+        this.rangLista = [];
+      },
+    });
   }
 
   loadActiveProjects() {
@@ -148,6 +169,7 @@ export class Pocetna implements OnInit {
     this.http.put<Task>(`${API_BASE_URL}/api/zadatak/my/${task.id}/status`, { status }).subscribe({
       next: (updatedTask) => {
         this.tasks = this.tasks.map((item) => (item.id === updatedTask.id ? updatedTask : item));
+        this.loadRangLista();
       },
       error: (err) => {
         console.error('Greška pri promeni statusa zadatka:', err);
@@ -158,6 +180,10 @@ export class Pocetna implements OnInit {
 
   isAccepted(status: string): boolean {
     return this.normalizeStatus(status) === 'prihvacen';
+  }
+
+  isTaskPending(status: string): boolean {
+    return this.normalizeStatus(status) === 'dodeljen';
   }
 
   private normalizeStatus(status: string): string {

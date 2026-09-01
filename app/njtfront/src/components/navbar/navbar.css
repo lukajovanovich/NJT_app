@@ -29,20 +29,7 @@
   width: 46px;
   height: 46px;
   border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, #0f172a, #3591dd);
-  color: white;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.brand-eyebrow {
-  margin: 0 0 2px;
-  color: rgba(191, 219, 254, 0.78);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  object-fit: cover;
 }
 
 .NavLeft h1 {

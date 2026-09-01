@@ -19,29 +19,32 @@
         </label>
 
         <label>
-          Dodeli korisniku
-          <select [(ngModel)]="taskForm.dodeljenClanuId" name="dodeljenClanuId" required>
-            <option value="">Odaberi korisnika</option>
-            <option *ngFor="let user of users" [value]="user.id">
-              {{ user.ime }} {{ user.prezime }}
-            </option>
-          </select>
-        </label>
-
-        <label>
           Projekat
-          <select [(ngModel)]="taskForm.projekatId" name="projekatId">
-            <option value="">Bez projekta</option>
+          <select [(ngModel)]="taskForm.projekatId" name="projekatId" (ngModelChange)="onProjectChange()" required>
+            <option value="">Odaberi projekat</option>
             <option *ngFor="let project of projects" [value]="project.id">{{ project.naziv }}</option>
           </select>
         </label>
 
         <label>
           Tim
-          <select [(ngModel)]="taskForm.timId" name="timId">
-            <option value="">Bez tima</option>
+          <select [(ngModel)]="taskForm.timId" name="timId" (ngModelChange)="onTeamChange()" [disabled]="!taskForm.projekatId" required>
+            <option value="">Odaberi tim</option>
             <option *ngFor="let team of availableTeams" [value]="team.id">{{ team.naziv }}</option>
           </select>
+        </label>
+
+        <label>
+          Dodeli korisniku
+          <select [(ngModel)]="taskForm.dodeljenClanuId" name="dodeljenClanuId" [disabled]="!taskForm.timId" required>
+            <option value="">Odaberi korisnika</option>
+            <option *ngFor="let user of availableUsers" [value]="user.id">
+              {{ user.ime }} {{ user.prezime }}
+            </option>
+          </select>
+          <p class="Hint" *ngIf="taskForm.timId && availableUsers.length === 0">
+            Nema dostupnih korisnika u ovom timu.
+          </p>
         </label>
 
         <button type="submit" class="PrimaryBtn" [disabled]="taskFormRef.invalid">Dodeli task</button>

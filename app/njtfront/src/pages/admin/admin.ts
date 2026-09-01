@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { API_BASE_URL, APP_NAME } from '../../app/app.constants';
-import { AuthUser, getCurrentUser } from '../../app/auth-storage';
+import { getCurrentUser } from '../../app/auth-storage';
 
 interface Member {
   id: number;
@@ -12,7 +12,7 @@ interface Member {
   prezime: string;
   email: string;
   brojTelefona: string;
-  uo: boolean;
+  admin: boolean;
   teamLeader: boolean;
 }
 
@@ -45,20 +45,28 @@ interface Project {
   odabraniKoordinator: Member | null;
 }
 
+interface ProjectListItem extends Project {
+  datumPocetkaPrikaz: string;
+  datumZavrsetkaPrikaz: string;
+}
+
 @Component({
-  selector: 'app-uo',
+  selector: 'app-admin',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './uo.html',
-  styleUrls: ['./uo.css'],
+  templateUrl: './admin.html',
+  styleUrls: ['./admin.css'],
 })
-export class UoPage implements OnInit {
+export class AdminPage implements OnInit, OnDestroy {
   readonly appName = APP_NAME;
 
-  activeProjects: Project[] = [];
+  activeProjects: ProjectListItem[] = [];
   prijave: PrijavaItem[] = [];
   coordinators: Member[] = [];
   editingProjectId: number | null = null;
+  prijaveLoadError = '';
+  private prijaveRefreshId: ReturnType<typeof window.setInterval> | null = null;
+
   projectForm = {
     naziv: '',
     datumPocetka: '',
@@ -70,7 +78,7 @@ export class UoPage implements OnInit {
 
   ngOnInit(): void {
     const currentUser = getCurrentUser();
-    if (!currentUser?.id || !currentUser?.uo) {
+    if (!currentUser?.id || !currentUser.admin) {
       this.router.navigate(['/login']);
       return;
     }
@@ -78,6 +86,14 @@ export class UoPage implements OnInit {
     this.loadActiveProjects();
     this.loadPrijave();
     this.loadCoordinators();
+    this.prijaveRefreshId = window.setInterval(() => this.loadPrijave(), 15000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.prijaveRefreshId !== null) {
+      window.clearInterval(this.prijaveRefreshId);
+      this.prijaveRefreshId = null;
+    }
   }
 
   loadActiveProjects() {
@@ -85,26 +101,27 @@ export class UoPage implements OnInit {
       next: (data) => {
         this.activeProjects = data.map((project) => ({
           ...project,
-          datumPocetka: this.formatDate(project.datumPocetka),
-          datumZavrsetka: this.formatDate(project.datumZavrsetka),
+          datumPocetkaPrikaz: this.formatDate(project.datumPocetka),
+          datumZavrsetkaPrikaz: this.formatDate(project.datumZavrsetka),
         }));
       },
-      error: (err) => console.error('Greška pri učitavanju projekata:', err),
+      error: (err) => console.error('Greska pri ucitavanju projekata:', err),
     });
   }
 
   loadCoordinators() {
     this.http.get<Member[]>(`${API_BASE_URL}/api/clan-organizacije`).subscribe({
       next: (data) => {
-        this.coordinators = data.filter((user) => user.teamLeader || user.uo);
+        this.coordinators = data.filter((user) => user.teamLeader || user.admin);
       },
-      error: (err) => console.error('Greška pri učitavanju koordinatora:', err),
+      error: (err) => console.error('Greska pri ucitavanju koordinatora:', err),
     });
   }
 
   loadPrijave() {
     this.http.get<BackendPrijavaItem[]>(`${API_BASE_URL}/api/prijava/pending`).subscribe({
       next: (data) => {
+        this.prijaveLoadError = '';
         this.prijave = data.map((prijava) => ({
           id: prijava.id,
           Ime: prijava.clan?.ime || 'Nepoznato',
@@ -117,8 +134,9 @@ export class UoPage implements OnInit {
         }));
       },
       error: (err) => {
-        console.error('Greška pri učitavanju prijava:', err);
+        console.error('Greska pri ucitavanju prijava:', err);
         this.prijave = [];
+        this.prijaveLoadError = 'Prijave trenutno nisu mogle da se ucitaju. Osvezite stranicu ili se prijavite ponovo.';
       },
     });
   }
@@ -152,13 +170,13 @@ export class UoPage implements OnInit {
         this.prijave = this.prijave.filter((project) => project.id !== prijava.id);
       },
       error: (err) => {
-        console.error('Greška pri ažuriranju statusa prijave:', err);
-        alert('Došlo je do greške pri promeni statusa prijave.');
+        console.error('Greska pri azuriranju statusa prijave:', err);
+        alert('Doslo je do greske pri promeni statusa prijave.');
       },
     });
   }
 
-  startEdit(project: Project) {
+  startEdit(project: ProjectListItem) {
     this.editingProjectId = project.id;
     this.projectForm = {
       naziv: project.naziv,
@@ -198,14 +216,14 @@ export class UoPage implements OnInit {
         this.resetProjectForm();
       },
       error: (err) => {
-        console.error('Greška pri čuvanju projekta:', err);
-        alert('Došlo je do greške pri čuvanju projekta.');
+        console.error('Greska pri cuvanju projekta:', err);
+        alert('Doslo je do greske pri cuvanju projekta.');
       },
     });
   }
 
-  deleteProject(project: Project) {
-    if (!confirm(`Da li sigurno želiš da obrišeš projekat "${project.naziv}"?`)) {
+  deleteProject(project: ProjectListItem) {
+    if (!confirm(`Da li sigurno zelis da obrises projekat "${project.naziv}"?`)) {
       return;
     }
 
@@ -217,19 +235,40 @@ export class UoPage implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Greška pri brisanju projekta:', err);
+        console.error('Greska pri brisanju projekta:', err);
         alert('Brisanje projekta nije uspelo.');
       },
     });
   }
 
   private formatDate(dateString: string): string {
+    if (!dateString) {
+      return '';
+    }
+
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+      return dateString;
+    }
+
     return date.toLocaleDateString('sr-RS');
   }
 
   private toInputDate(dateString: string): string {
+    if (!dateString) {
+      return '';
+    }
+
+    const isoDateMatch = dateString.match(/^\d{4}-\d{2}-\d{2}/);
+    if (isoDateMatch) {
+      return isoDateMatch[0];
+    }
+
     const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
     return date.toISOString().slice(0, 10);
   }
 }

@@ -31,6 +31,6 @@ public class AuthContextServis {
     }
 
     public boolean isAdmin(ClanOrganizacije korisnik) {
-        return korisnik != null && korisnik.isUo();
+        return korisnik != null && korisnik.isAdmin();
     }
 }

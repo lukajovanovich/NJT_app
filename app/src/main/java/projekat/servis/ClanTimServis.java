@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,8 +75,13 @@ public class ClanTimServis {
             return postojecaVeza;
         }
 
-        ClanTim veza = new ClanTim(clan, tim);
-        return clanTimRepo.save(veza);
+        try {
+            ClanTim veza = new ClanTim(clan, tim);
+            return clanTimRepo.save(veza);
+        } catch (DataIntegrityViolationException ex) {
+            return clanTimRepo.findByClan_IdAndTim_Id(clanId, timId)
+                    .orElseThrow(() -> ex);
+        }
     }
 
     private ClanTimPregledDTO toPregledDto(ClanTim veza) {

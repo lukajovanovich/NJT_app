@@ -32,8 +32,9 @@ public class ClanOrganizacije {
     private String prezime;
     private String email;
     private String brojTelefona;
-    private boolean uo;
+    private boolean admin;
     private boolean teamLeader;
+    private int bodovi;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String sifra;
@@ -51,13 +52,13 @@ public class ClanOrganizacije {
     }
 
     public ClanOrganizacije(int id, String ime, String prezime, String email,
-                            String brojTelefona, boolean uo, boolean teamLeader, String sifra, List<Tim> timovi) {
+                            String brojTelefona, boolean admin, boolean teamLeader, String sifra, List<Tim> timovi) {
         this.id = id;
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
         this.brojTelefona = brojTelefona;
-        this.uo = uo;
+        this.admin = admin;
         this.teamLeader = teamLeader;
         this.sifra = sifra;
         this.timovi = timovi;
@@ -78,11 +79,14 @@ public class ClanOrganizacije {
     public String getBrojTelefona() { return brojTelefona; }
     public void setBrojTelefona(String brojTelefona) { this.brojTelefona = brojTelefona; }
 
-    public boolean isUo() { return uo; }
-    public void setUo(boolean uo) { this.uo = uo; }
+    public boolean isAdmin() { return admin; }
+    public void setAdmin(boolean admin) { this.admin = admin; }
 
     public boolean isTeamLeader() { return teamLeader; }
     public void setTeamLeader(boolean teamLeader) { this.teamLeader = teamLeader; }
+
+    public int getBodovi() { return bodovi; }
+    public void setBodovi(int bodovi) { this.bodovi = bodovi; }
 
     public List<Tim> getTimovi() { return timovi; }
     public void setTimovi(List<Tim> timovi) { this.timovi = timovi; }
@@ -98,7 +102,7 @@ public class ClanOrganizacije {
                 ", prezime='" + prezime + '\'' +
                 ", email='" + email + '\'' +
                 ", brojTelefona='" + brojTelefona + '\'' +
-                ", uo=" + uo +
+                ", admin=" + admin +
                 ", teamLeader=" + teamLeader +
                 ", sifra=[PROTECTED]" +
                 '}';

@@ -1,6 +1,6 @@
 <div class="LoginContainer">
   <h1 class="neon-text">{{ appName }}</h1>
-  <p class="subtitle">Prijava i registracija korisnika, lidera timova i admina.</p>
+  <p class="subtitle">Prijava i registracija korisnika.</p>
 
   <form (ngSubmit)="login()" #loginForm="ngForm">
     <div>
@@ -89,7 +89,7 @@
 
       <div class="role-grid">
         <label class="role-option">
-          <input type="checkbox" [(ngModel)]="newUser.uo" name="uo" />
+          <input type="checkbox" [(ngModel)]="newUser.admin" name="admin" />
           <span>Admin / UO</span>
         </label>
 

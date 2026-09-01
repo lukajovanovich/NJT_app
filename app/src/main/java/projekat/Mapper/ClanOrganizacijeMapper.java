@@ -36,8 +36,9 @@ public class ClanOrganizacijeMapper implements DtoEntityMapper<ClanOrganizacijeD
                 e.getPrezime(),
                 e.getEmail(),
                 e.getBrojTelefona(),
-                e.isUo(),
+                e.isAdmin(),
                 e.isTeamLeader(),
+                e.getBodovi(),
                 null,
                 timoviDto
         );
@@ -61,7 +62,7 @@ public class ClanOrganizacijeMapper implements DtoEntityMapper<ClanOrganizacijeD
                 c.getPrezime(),
                 c.getEmail(),
                 c.getBrojTelefona(),
-                c.isUo(),
+                c.isAdmin(),
                 c.isTeamLeader(),
                 c.getSifra(),
                 timovi
@@ -77,8 +78,9 @@ public class ClanOrganizacijeMapper implements DtoEntityMapper<ClanOrganizacijeD
                 e.getPrezime(),
                 e.getEmail(),
                 e.getBrojTelefona(),
-                e.isUo(),
+                e.isAdmin(),
                 e.isTeamLeader(),
+                e.getBodovi(),
                 null,
                 null
         );

@@ -10,7 +10,7 @@ import projekat.model.ClanOrganizacije;
 public final class SecurityRoles {
 
     public static final String USER = "USER";
-    public static final String UO = "UO";
+    public static final String ADMIN = "ADMIN";
     public static final String TEAM_LEADER = "TEAM_LEADER";
 
     private SecurityRoles() {
@@ -20,8 +20,8 @@ public final class SecurityRoles {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + USER));
 
-        if (korisnik != null && korisnik.isUo()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + UO));
+        if (korisnik != null && korisnik.isAdmin()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + ADMIN));
         }
 
         if (korisnik != null && korisnik.isTeamLeader()) {

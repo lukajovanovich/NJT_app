@@ -70,12 +70,12 @@ public class ClanOrganizacijeRepository implements MyAppRepository<ClanOrganizac
         return result.isEmpty() ? null : result.get(0);
     }
 
-    public List<String> findUoEmails() {
+    public List<String> findAdminEmails() {
         return entityManager.createQuery(
                 """
                 SELECT c.email
                 FROM ClanOrganizacije c
-                WHERE c.uo = true
+                WHERE c.admin = true
                   AND c.email IS NOT NULL
                   AND c.email <> ''
                 """,

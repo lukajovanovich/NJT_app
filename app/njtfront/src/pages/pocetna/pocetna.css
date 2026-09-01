@@ -80,6 +80,11 @@
   background-color: rgba(53, 145, 221, 0.1);
 }
 
+.DataTable tr.MyRow {
+  background-color: rgba(22, 163, 74, 0.18);
+  font-weight: 700;
+}
+
 .PrimaryBtn,
 .DangerBtn {
   border: none;

@@ -16,6 +16,7 @@ import projekat.model.Projekat;
 import projekat.model.Tim;
 import projekat.model.Zadatak;
 import projekat.repository.ClanOrganizacijeRepository;
+import projekat.repository.ClanTimRepository;
 import projekat.repository.ProjekatRepository;
 import projekat.repository.TimRepository;
 import projekat.repository.ZadatakRepository;
@@ -28,27 +29,36 @@ public class ZadatakServis {
     private static final String STATUS_URADJEN = "Uradjen";
     private static final String STATUS_NIJE_URADJEN = "Nije uradjen";
 
+    private static final int POENI_ZA_URADJEN = 10;
+    private static final int POENI_ZA_NIJE_URADJEN = -3;
+
     private final ZadatakRepository zadatakRepository;
     private final ClanOrganizacijeRepository clanRepository;
     private final ProjekatRepository projekatRepository;
     private final TimRepository timRepository;
+    private final ClanTimRepository clanTimRepository;
     private final ClanOrganizacijeMapper clanMapper;
     private final AuthContextServis authContextServis;
+    private final EmailServis emailServis;
 
     public ZadatakServis(
             ZadatakRepository zadatakRepository,
             ClanOrganizacijeRepository clanRepository,
             ProjekatRepository projekatRepository,
             TimRepository timRepository,
+            ClanTimRepository clanTimRepository,
             ClanOrganizacijeMapper clanMapper,
-            AuthContextServis authContextServis
+            AuthContextServis authContextServis,
+            EmailServis emailServis
     ) {
         this.zadatakRepository = zadatakRepository;
         this.clanRepository = clanRepository;
         this.projekatRepository = projekatRepository;
         this.timRepository = timRepository;
+        this.clanTimRepository = clanTimRepository;
         this.clanMapper = clanMapper;
         this.authContextServis = authContextServis;
+        this.emailServis = emailServis;
     }
 
     @Transactional(readOnly = true)
@@ -62,7 +72,7 @@ public class ZadatakServis {
     @Transactional(readOnly = true)
     public List<ZadatakDTO> findCreatedByCurrentLeader() {
         ClanOrganizacije currentUser = authContextServis.getCurrentUser();
-        if (!currentUser.isTeamLeader() && !currentUser.isUo()) {
+        if (!currentUser.isTeamLeader() && !currentUser.isAdmin()) {
             throw new AccessDeniedException("Samo team leader ili admin mogu da vide ove zadatke.");
         }
 
@@ -74,13 +84,17 @@ public class ZadatakServis {
     @Transactional
     public ZadatakDTO create(ZadatakCreateDTO dto) throws Exception {
         ClanOrganizacije currentUser = authContextServis.getCurrentUser();
-        if (!currentUser.isTeamLeader() && !currentUser.isUo()) {
+        if (!currentUser.isTeamLeader() && !currentUser.isAdmin()) {
             throw new AccessDeniedException("Samo team leader ili admin mogu da kreiraju zadatke.");
         }
 
         ClanOrganizacije dodeljenClanu = clanRepository.findById(dto.getDodeljenClanuId());
         Projekat projekat = dto.getProjekatId() != null ? projekatRepository.findById(dto.getProjekatId()) : null;
         Tim tim = dto.getTimId() != null ? timRepository.findById(dto.getTimId()) : null;
+
+        if (tim != null && clanTimRepository.findByClan_IdAndTim_Id(dodeljenClanu.getId(), tim.getId()).isEmpty()) {
+            throw new IllegalArgumentException("Izabrani korisnik nije član izabranog tima.");
+        }
 
         Zadatak zadatak = new Zadatak(
                 dto.getNaslov().trim(),
@@ -93,6 +107,7 @@ public class ZadatakServis {
         );
 
         zadatakRepository.save(zadatak);
+        emailServis.posaljiObavestenjeONovomZadatku(zadatak);
         return toDto(zadatak);
     }
 
@@ -103,13 +118,45 @@ public class ZadatakServis {
 
         boolean owner = zadatak.getDodeljenClanu() != null && zadatak.getDodeljenClanu().getId() == currentUser.getId();
         boolean creator = zadatak.getKreirao() != null && zadatak.getKreirao().getId() == currentUser.getId();
-        if (!owner && !creator && !currentUser.isUo()) {
+        if (!owner && !creator && !currentUser.isAdmin()) {
             throw new AccessDeniedException("Nemate pravo da menjate status ovog zadatka.");
         }
 
-        zadatak.setStatus(normalizeStatus(dto.getStatus()));
+        String stariStatus = zadatak.getStatus();
+        String noviStatus = normalizeStatus(dto.getStatus());
+
+        if (!stariStatus.equals(noviStatus)) {
+            azurirajBodove(zadatak.getDodeljenClanu(), stariStatus, noviStatus);
+        }
+
+        zadatak.setStatus(noviStatus);
         zadatakRepository.save(zadatak);
         return toDto(zadatak);
+    }
+
+    private void azurirajBodove(ClanOrganizacije clan, String stariStatus, String noviStatus) {
+        if (clan == null) {
+            return;
+        }
+
+        int delta = 0;
+
+        if (STATUS_URADJEN.equals(noviStatus) && !STATUS_URADJEN.equals(stariStatus)) {
+            delta += POENI_ZA_URADJEN;
+        } else if (STATUS_URADJEN.equals(stariStatus) && !STATUS_URADJEN.equals(noviStatus)) {
+            delta -= POENI_ZA_URADJEN;
+        }
+
+        if (STATUS_NIJE_URADJEN.equals(noviStatus) && !STATUS_NIJE_URADJEN.equals(stariStatus)) {
+            delta += POENI_ZA_NIJE_URADJEN;
+        } else if (STATUS_NIJE_URADJEN.equals(stariStatus) && !STATUS_NIJE_URADJEN.equals(noviStatus)) {
+            delta -= POENI_ZA_NIJE_URADJEN;
+        }
+
+        if (delta != 0) {
+            clan.setBodovi(clan.getBodovi() + delta);
+            clanRepository.save(clan);
+        }
     }
 
     private ZadatakDTO toDto(Zadatak zadatak) {

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { APP_NAME } from '../../app/app.constants';
-import { clearAuth, getCurrentUser, isAdmin, isTeamLeader } from '../../app/auth-storage';
+import { clearAuth, getCurrentUser, hasValidSession, isAdmin, isTeamLeader } from '../../app/auth-storage';
 
 @Component({
   selector: 'app-navbar',
@@ -28,8 +28,8 @@ export class Navbar implements OnInit {
   }
 
   refreshState() {
-    const user = getCurrentUser();
-    this.isLoggedIn = !!user;
+    this.isLoggedIn = hasValidSession();
+    const user = this.isLoggedIn ? getCurrentUser() : null;
     this.userName = user?.ime || '';
     this.canOpenLeader = isTeamLeader(user) || isAdmin(user);
     this.canOpenAdmin = isAdmin(user);
@@ -49,8 +49,8 @@ export class Navbar implements OnInit {
       return;
     }
 
-    if (user.uo) {
-      this.router.navigate(['/uo']);
+    if (user.admin) {
+      this.router.navigate(['/admin']);
       return;
     }
 
@@ -62,6 +62,6 @@ export class Navbar implements OnInit {
   }
 
   openAdmin() {
-    this.router.navigate(['/uo']);
+    this.router.navigate(['/admin']);
   }
 }

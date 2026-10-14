@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { getCurrentUser, hasValidSession, isAdmin, isTeamLeader } from './auth-storage';
+import { getCurrentUser, hasValidSession, isAdmin, isRukovodilac } from './auth-storage';
 
 export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
@@ -23,11 +23,11 @@ export const adminGuard: CanActivateFn = () => {
   return router.createUrlTree(['/login']);
 };
 
-export const leaderGuard: CanActivateFn = () => {
+export const rukovodilacGuard: CanActivateFn = () => {
   const router = inject(Router);
   const user = getCurrentUser();
 
-  if (hasValidSession() && (isTeamLeader(user) || isAdmin(user))) {
+  if (hasValidSession() && (isRukovodilac(user) || isAdmin(user))) {
     return true;
   }
 

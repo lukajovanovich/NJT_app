@@ -32,13 +32,13 @@ interface Task {
 }
 
 @Component({
-  selector: 'app-lider',
+  selector: 'app-rukovodilac',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './lider.html',
-  styleUrls: ['./lider.css'],
+  templateUrl: './rukovodilac.html',
+  styleUrls: ['./rukovodilac.css'],
 })
-export class LiderPage implements OnInit {
+export class RukovodilacPage implements OnInit {
   readonly appName = APP_NAME;
 
   users: AuthUser[] = [];
@@ -58,7 +58,7 @@ export class LiderPage implements OnInit {
 
   ngOnInit(): void {
     const currentUser = getCurrentUser();
-    if (!currentUser?.id || (!currentUser.teamLeader && !currentUser.admin)) {
+    if (!currentUser?.id || (!currentUser.rukovodilac && !currentUser.admin)) {
       this.router.navigate(['/login']);
       return;
     }
@@ -125,7 +125,7 @@ export class LiderPage implements OnInit {
   }
 
   loadCreatedTasks() {
-    this.http.get<Task[]>(`${API_BASE_URL}/api/zadatak/leader/created`).subscribe({
+    this.http.get<Task[]>(`${API_BASE_URL}/api/zadatak/rukovodilac/created`).subscribe({
       next: (data) => {
         this.createdTasks = data;
       },
@@ -142,7 +142,7 @@ export class LiderPage implements OnInit {
       timId: this.taskForm.timId ? Number(this.taskForm.timId) : null,
     };
 
-    this.http.post(`${API_BASE_URL}/api/zadatak/leader`, payload).subscribe({
+    this.http.post(`${API_BASE_URL}/api/zadatak/rukovodilac`, payload).subscribe({
       next: () => {
         this.loadCreatedTasks();
         this.taskForm = {

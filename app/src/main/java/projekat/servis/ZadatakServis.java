@@ -70,10 +70,10 @@ public class ZadatakServis {
     }
 
     @Transactional(readOnly = true)
-    public List<ZadatakDTO> findCreatedByCurrentLeader() {
+    public List<ZadatakDTO> findCreatedByCurrentRukovodilac() {
         ClanOrganizacije currentUser = authContextServis.getCurrentUser();
-        if (!currentUser.isTeamLeader() && !currentUser.isAdmin()) {
-            throw new AccessDeniedException("Samo team leader ili admin mogu da vide ove zadatke.");
+        if (!currentUser.isRukovodilac() && !currentUser.isAdmin()) {
+            throw new AccessDeniedException("Samo rukovodilac ili admin mogu da vide ove zadatke.");
         }
 
         return zadatakRepository.findByKreiraoId(currentUser.getId()).stream()
@@ -84,8 +84,8 @@ public class ZadatakServis {
     @Transactional
     public ZadatakDTO create(ZadatakCreateDTO dto) throws Exception {
         ClanOrganizacije currentUser = authContextServis.getCurrentUser();
-        if (!currentUser.isTeamLeader() && !currentUser.isAdmin()) {
-            throw new AccessDeniedException("Samo team leader ili admin mogu da kreiraju zadatke.");
+        if (!currentUser.isRukovodilac() && !currentUser.isAdmin()) {
+            throw new AccessDeniedException("Samo rukovodilac ili admin mogu da kreiraju zadatke.");
         }
 
         ClanOrganizacije dodeljenClanu = clanRepository.findById(dto.getDodeljenClanuId());

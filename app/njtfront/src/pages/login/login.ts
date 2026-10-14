@@ -29,7 +29,7 @@ export class LoginPage {
     sifra: '',
     brojTelefona: '',
     admin: false,
-    teamLeader: false,
+    rukovodilac: false,
   };
 
   constructor(private router: Router, private http: HttpClient) {}
@@ -50,8 +50,8 @@ export class LoginPage {
 
         if (user.admin) {
           this.router.navigate(['/admin']);
-        } else if (user.teamLeader) {
-          this.router.navigate(['/lider']);
+        } else if (user.rukovodilac) {
+          this.router.navigate(['/rukovodilac']);
         } else {
           this.router.navigate(['/pocetna']);
         }
@@ -85,7 +85,7 @@ export class LoginPage {
           sifra: '',
           brojTelefona: '',
           admin: false,
-          teamLeader: false,
+          rukovodilac: false,
         };
       },
       error: (err) => {

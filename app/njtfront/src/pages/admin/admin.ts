@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { API_BASE_URL, APP_NAME } from '../../app/app.constants';
 import { getCurrentUser } from '../../app/auth-storage';
@@ -13,7 +13,7 @@ interface Member {
   email: string;
   brojTelefona: string;
   admin: boolean;
-  teamLeader: boolean;
+  rukovodilac: boolean;
 }
 
 interface PrijavaItem {
@@ -59,6 +59,8 @@ interface ProjectListItem extends Project {
 })
 export class AdminPage implements OnInit, OnDestroy {
   readonly appName = APP_NAME;
+
+  @ViewChild('projectFormRef') projectFormRef?: NgForm;
 
   activeProjects: ProjectListItem[] = [];
   prijave: PrijavaItem[] = [];
@@ -112,7 +114,7 @@ export class AdminPage implements OnInit, OnDestroy {
   loadCoordinators() {
     this.http.get<Member[]>(`${API_BASE_URL}/api/clan-organizacije`).subscribe({
       next: (data) => {
-        this.coordinators = data.filter((user) => user.teamLeader || user.admin);
+        this.coordinators = data.filter((user) => user.rukovodilac || user.admin);
       },
       error: (err) => console.error('Greska pri ucitavanju koordinatora:', err),
     });
@@ -188,6 +190,7 @@ export class AdminPage implements OnInit, OnDestroy {
 
   resetProjectForm() {
     this.editingProjectId = null;
+    this.projectFormRef?.resetForm();
     this.projectForm = {
       naziv: '',
       datumPocetka: '',
@@ -197,6 +200,8 @@ export class AdminPage implements OnInit, OnDestroy {
   }
 
   saveProject() {
+    this.projectFormRef?.form.markAllAsTouched();
+
     const coordinator = this.coordinators.find((item) => item.id === Number(this.projectForm.odabraniKoordinatorId)) || null;
     const payload = {
       id: this.editingProjectId ?? 0,
@@ -217,7 +222,7 @@ export class AdminPage implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Greska pri cuvanju projekta:', err);
-        alert('Doslo je do greske pri cuvanju projekta.');
+        alert('Došlo je do greške pri čuvanju projekta.');
       },
     });
   }

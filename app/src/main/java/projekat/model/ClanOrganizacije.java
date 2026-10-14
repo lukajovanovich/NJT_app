@@ -33,7 +33,7 @@ public class ClanOrganizacije {
     private String email;
     private String brojTelefona;
     private boolean admin;
-    private boolean teamLeader;
+    private boolean rukovodilac;
     private int bodovi;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -52,14 +52,14 @@ public class ClanOrganizacije {
     }
 
     public ClanOrganizacije(int id, String ime, String prezime, String email,
-                            String brojTelefona, boolean admin, boolean teamLeader, String sifra, List<Tim> timovi) {
+                            String brojTelefona, boolean admin, boolean rukovodilac, String sifra, List<Tim> timovi) {
         this.id = id;
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
         this.brojTelefona = brojTelefona;
         this.admin = admin;
-        this.teamLeader = teamLeader;
+        this.rukovodilac = rukovodilac;
         this.sifra = sifra;
         this.timovi = timovi;
     }
@@ -82,8 +82,8 @@ public class ClanOrganizacije {
     public boolean isAdmin() { return admin; }
     public void setAdmin(boolean admin) { this.admin = admin; }
 
-    public boolean isTeamLeader() { return teamLeader; }
-    public void setTeamLeader(boolean teamLeader) { this.teamLeader = teamLeader; }
+    public boolean isRukovodilac() { return rukovodilac; }
+    public void setRukovodilac(boolean rukovodilac) { this.rukovodilac = rukovodilac; }
 
     public int getBodovi() { return bodovi; }
     public void setBodovi(int bodovi) { this.bodovi = bodovi; }
@@ -103,7 +103,7 @@ public class ClanOrganizacije {
                 ", email='" + email + '\'' +
                 ", brojTelefona='" + brojTelefona + '\'' +
                 ", admin=" + admin +
-                ", teamLeader=" + teamLeader +
+                ", rukovodilac=" + rukovodilac +
                 ", sifra=[PROTECTED]" +
                 '}';
     }

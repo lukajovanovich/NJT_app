@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { APP_NAME } from '../../app/app.constants';
-import { clearAuth, getCurrentUser, hasValidSession, isAdmin, isTeamLeader } from '../../app/auth-storage';
+import { clearAuth, getCurrentUser, hasValidSession, isAdmin, isRukovodilac } from '../../app/auth-storage';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +17,7 @@ export class Navbar implements OnInit {
   readonly appName = APP_NAME;
   userName = '';
   isLoggedIn = false;
-  canOpenLeader = false;
+  canOpenRukovodilac = false;
   canOpenAdmin = false;
 
   constructor(private router: Router) {}
@@ -31,7 +31,7 @@ export class Navbar implements OnInit {
     this.isLoggedIn = hasValidSession();
     const user = this.isLoggedIn ? getCurrentUser() : null;
     this.userName = user?.ime || '';
-    this.canOpenLeader = isTeamLeader(user) || isAdmin(user);
+    this.canOpenRukovodilac = isRukovodilac(user) || isAdmin(user);
     this.canOpenAdmin = isAdmin(user);
   }
 
@@ -57,8 +57,8 @@ export class Navbar implements OnInit {
     this.router.navigate(['/pocetna']);
   }
 
-  openLeader() {
-    this.router.navigate(['/lider']);
+  openRukovodilac() {
+    this.router.navigate(['/rukovodilac']);
   }
 
   openAdmin() {

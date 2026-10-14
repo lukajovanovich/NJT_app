@@ -36,12 +36,12 @@ public class ZadatakController {
         return new ResponseEntity<>(zadatakServis.findAssignedToCurrentUser(), HttpStatus.OK);
     }
 
-    @GetMapping("/leader/created")
-    public ResponseEntity<List<ZadatakDTO>> getLeaderTasks() {
-        return new ResponseEntity<>(zadatakServis.findCreatedByCurrentLeader(), HttpStatus.OK);
+    @GetMapping("/rukovodilac/created")
+    public ResponseEntity<List<ZadatakDTO>> getRukovodilacTasks() {
+        return new ResponseEntity<>(zadatakServis.findCreatedByCurrentRukovodilac(), HttpStatus.OK);
     }
 
-    @PostMapping("/leader")
+    @PostMapping("/rukovodilac")
     public ResponseEntity<ZadatakDTO> createTask(@Valid @RequestBody @NotNull ZadatakCreateDTO dto) {
         try {
             return new ResponseEntity<>(zadatakServis.create(dto), HttpStatus.CREATED);

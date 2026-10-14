@@ -5,7 +5,7 @@ export interface AuthUser {
   email: string;
   brojTelefona: string;
   admin: boolean;
-  teamLeader: boolean;
+  rukovodilac: boolean;
 }
 
 export interface AuthResponse {
@@ -76,6 +76,6 @@ export function isAdmin(user: AuthUser | null = getCurrentUser()): boolean {
   return !!user?.admin;
 }
 
-export function isTeamLeader(user: AuthUser | null = getCurrentUser()): boolean {
-  return !!user?.teamLeader;
+export function isRukovodilac(user: AuthUser | null = getCurrentUser()): boolean {
+  return !!user?.rukovodilac;
 }

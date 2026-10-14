@@ -33,7 +33,6 @@ export class App implements AfterViewInit {
   }
 
   logout() {
-    // ovde samo preusmeravanje na login
     this.router.navigate(['/']);
   }
 

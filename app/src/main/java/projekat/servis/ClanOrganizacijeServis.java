@@ -104,7 +104,7 @@ public class ClanOrganizacijeServis {
             postojeci.setEmail(dto.getEmail());
             postojeci.setBrojTelefona(dto.getBrojTelefona());
             postojeci.setAdmin(dto.isAdmin());
-            postojeci.setTeamLeader(dto.isTeamLeader());
+            postojeci.setRukovodilac(dto.isRukovodilac());
 
             if (dto.getSifra() != null && !dto.getSifra().isBlank()) {
                 postojeci.setSifra(passwordEncoder.encode(dto.getSifra()));

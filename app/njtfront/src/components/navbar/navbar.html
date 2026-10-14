@@ -9,7 +9,7 @@
   <div class="NavRight" *ngIf="isLoggedIn">
     <span class="welcome">Dobro došao, {{ userName }}.</span>
     <button class="NavButton" (click)="goHome()">Početna</button>
-    <button class="NavButton" *ngIf="canOpenLeader" (click)="openLeader()">Lider</button>
+    <button class="NavButton" *ngIf="canOpenRukovodilac" (click)="openRukovodilac()">Rukovodilac</button>
     <button class="NavButton" *ngIf="canOpenAdmin" (click)="openAdmin()">Admin</button>
     <button class="NeonSignOut" (click)="onLogout()">Logout</button>
   </div>

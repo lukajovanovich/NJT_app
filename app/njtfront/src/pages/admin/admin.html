@@ -45,17 +45,20 @@
       <form class="ProjectForm" (ngSubmit)="saveProject()" #projectFormRef="ngForm">
         <label>
           Naziv projekta
-          <input type="text" [(ngModel)]="projectForm.naziv" name="naziv" required />
+          <input type="text" [(ngModel)]="projectForm.naziv" name="naziv" required #nazivField="ngModel" />
+          <p class="error" *ngIf="nazivField.invalid && nazivField.touched">Naziv je obavezan.</p>
         </label>
 
         <label>
           Datum početka
-          <input type="date" [(ngModel)]="projectForm.datumPocetka" name="datumPocetka" required />
+          <input type="date" [(ngModel)]="projectForm.datumPocetka" name="datumPocetka" required #datumPocetkaField="ngModel" />
+          <p class="error" *ngIf="datumPocetkaField.invalid && datumPocetkaField.touched">Datum početka je obavezan.</p>
         </label>
 
         <label>
           Datum završetka
-          <input type="date" [(ngModel)]="projectForm.datumZavrsetka" name="datumZavrsetka" required />
+          <input type="date" [(ngModel)]="projectForm.datumZavrsetka" name="datumZavrsetka" required #datumZavrsetkaField="ngModel" />
+          <p class="error" *ngIf="datumZavrsetkaField.invalid && datumZavrsetkaField.touched">Datum završetka je obavezan.</p>
         </label>
 
         <label>
@@ -69,7 +72,7 @@
         </label>
 
         <div class="FormActions">
-          <button type="submit" class="PrimaryBtn" [disabled]="projectFormRef.invalid">
+          <button type="submit" class="PrimaryBtn">
             {{ editingProjectId ? 'Sačuvaj izmene' : 'Dodaj projekat' }}
           </button>
           <button type="button" class="GhostBtn" (click)="resetProjectForm()">Reset</button>

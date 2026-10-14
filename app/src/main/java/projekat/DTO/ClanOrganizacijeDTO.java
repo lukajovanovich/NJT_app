@@ -22,7 +22,7 @@ public class ClanOrganizacijeDTO implements Dto {
     private String brojTelefona;
 
     private boolean admin;
-    private boolean teamLeader;
+    private boolean rukovodilac;
     private int bodovi;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -39,7 +39,7 @@ public class ClanOrganizacijeDTO implements Dto {
             String email,
             String brojTelefona,
             boolean admin,
-            boolean teamLeader,
+            boolean rukovodilac,
             int bodovi,
             String sifra,
             List<TimDTO> timovi
@@ -50,7 +50,7 @@ public class ClanOrganizacijeDTO implements Dto {
         this.email = email;
         this.brojTelefona = brojTelefona;
         this.admin = admin;
-        this.teamLeader = teamLeader;
+        this.rukovodilac = rukovodilac;
         this.bodovi = bodovi;
         this.sifra = sifra;
         this.timovi = timovi;
@@ -74,8 +74,8 @@ public class ClanOrganizacijeDTO implements Dto {
     public boolean isAdmin() { return admin; }
     public void setAdmin(boolean admin) { this.admin = admin; }
 
-    public boolean isTeamLeader() { return teamLeader; }
-    public void setTeamLeader(boolean teamLeader) { this.teamLeader = teamLeader; }
+    public boolean isRukovodilac() { return rukovodilac; }
+    public void setRukovodilac(boolean rukovodilac) { this.rukovodilac = rukovodilac; }
 
     public int getBodovi() { return bodovi; }
     public void setBodovi(int bodovi) { this.bodovi = bodovi; }

@@ -33,7 +33,7 @@ public class JwtServis {
                 .setSubject(korisnik.getEmail())
                 .claim("userId", korisnik.getId())
                 .claim("admin", korisnik.isAdmin())
-                .claim("teamLeader", korisnik.isTeamLeader())
+                .claim("rukovodilac", korisnik.isRukovodilac())
                 .setIssuedAt(now)
                 .setExpiration(expiry)
                 .signWith(secretKey, SignatureAlgorithm.HS256)

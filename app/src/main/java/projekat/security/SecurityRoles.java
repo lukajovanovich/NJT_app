@@ -11,7 +11,7 @@ public final class SecurityRoles {
 
     public static final String USER = "USER";
     public static final String ADMIN = "ADMIN";
-    public static final String TEAM_LEADER = "TEAM_LEADER";
+    public static final String RUKOVODILAC = "RUKOVODILAC";
 
     private SecurityRoles() {
     }
@@ -24,8 +24,8 @@ public final class SecurityRoles {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + ADMIN));
         }
 
-        if (korisnik != null && korisnik.isTeamLeader()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + TEAM_LEADER));
+        if (korisnik != null && korisnik.isRukovodilac()) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + RUKOVODILAC));
         }
 
         return authorities;

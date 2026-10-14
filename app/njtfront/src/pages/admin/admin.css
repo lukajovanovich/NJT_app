@@ -73,6 +73,16 @@
   padding: 10px 12px;
 }
 
+.ProjectForm input.ng-invalid.ng-touched {
+  border-color: #dc2626;
+}
+
+.error {
+  color: #ff5555;
+  font-size: 13px;
+  margin-top: -2px;
+}
+
 .FormActions {
   display: flex;
   gap: 10px;
@@ -92,6 +102,11 @@
 
 .PrimaryBtn {
   background-color: #2563eb;
+}
+
+.PrimaryBtn:disabled {
+  background-color: #64748b;
+  cursor: not-allowed;
 }
 
 .DangerBtn {

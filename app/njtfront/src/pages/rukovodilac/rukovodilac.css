@@ -1,4 +1,4 @@
-.LiderContainer {
+.RukovodilacContainer {
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@
   color: rgba(255, 255, 255, 0.86);
 }
 
-.LiderGrid {
+.RukovodilacGrid {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 24px;
